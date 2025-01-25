@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './App.css';
+import './index.css';
 
 function LoginPage() {
   return (
@@ -15,10 +15,13 @@ function LoginPage() {
           <label htmlFor="password">Password:</label>
           <input type="password" id="password" name="password" required />
         </div>
-        <button type="submit" className="login-button">Login</button>
+        <button type="submit" className="button">Login</button>
       </form>
       <Link to="/">
-        <button className="back-button">Back to Home</button>
+        <button className="button-secondary">Back to Home</button>
+      </Link>
+      <Link to="/results">
+        <button className="button">View Results</button>
       </Link>
     </div>
   );

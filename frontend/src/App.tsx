@@ -2,7 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import LoginPage from './LoginPage';
 import UploadPage from './UploadPage';
-import './App.css';
+import ResultsPage from './ResultsPage';
+import './index.css';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/upload" element={<UploadPage />} />
+        <Route path="/results" element={<ResultsPage />} />
       </Routes>
     </Router>
   );
@@ -23,15 +25,17 @@ function LandingPage() {
       <p className="slogan">Your health, simplified.</p>
       <div className="button-container">
         <Link to="/login">
-          <button className="landing-button">Login</button>
+          <button className="button">Login</button>
         </Link>
         <Link to="/upload">
-          <button className="landing-button">Upload Results</button>
+          <button className="button">Upload Results</button>
+        </Link>
+        <Link to="/results">
+          <button className="button">View Results</button>
         </Link>
       </div>
     </div>
   );
-
 }
 
 export default App;
