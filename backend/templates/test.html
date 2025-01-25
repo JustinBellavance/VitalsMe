@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Upload</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <h1>Upload a PDF File</h1>
@@ -11,6 +12,23 @@
         <label for="pdfFile">Choose a PDF file:</label>
         <input type="file" id="pdfFile" name="pdfFile" accept="application/pdf" required>
         <button type="submit">Upload</button>
-    </form>    
+    </form>   
+    <div style="width:1000px;height:400px"> 
+        <button id="loadPlotBtn">Show Plot</button>
+
+        <div id="plotContainer" style="margin-top: 10px;"></div>
+
+        <script>
+            $(document).ready(function(){
+                $("#loadPlotBtn").click(function(){
+                    // Send an AJAX GET request to the Flask backend to get the plot
+                    $.get("/figure", function(data){
+                        // Insert the plot HTML into the plotContainer div
+                        $("#plotContainer").html(data.plot);
+                    });
+                });
+            });
+        </script>
+    </div>
 </body>
 </html>

@@ -3,6 +3,8 @@ from flask import Flask, jsonify, request, render_template
 import pdfplumber
 import os
 
+from utils import create_distribution
+
 app = Flask(__name__)
 
 # Set the folder where the files will be uploaded
@@ -13,9 +15,12 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 def test_html():
     return render_template("test.html")
 
-@app.route('/incomes')
-def get_incomes():
-    return jsonify(incomes)
+
+@app.route('/figure')
+def get_figure():
+    
+    plot_html = create_distribution()
+    return jsonify({'plot': plot_html})
 
 
 @app.route('/upload', methods=['POST'])
