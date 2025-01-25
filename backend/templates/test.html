@@ -7,28 +7,45 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <h1>Upload a PDF File</h1>
-    <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+    <h1>Upload a PDF File and Get Plot</h1>
+    <form id="uploadForm" action="/process" method="POST" enctype="multipart/form-data">
         <label for="pdfFile">Choose a PDF file:</label>
         <input type="file" id="pdfFile" name="pdfFile" accept="application/pdf" required>
-        <button type="submit">Upload</button>
+        <button type="submit">Upload and Show Plot</button>
     </form>   
+
     <div style="width:1000px;height:400px"> 
-        <button id="loadPlotBtn">Show Plot</button>
-
         <div id="plotContainer" style="margin-top: 10px;"></div>
+    </div>
 
-        <script>
-            $(document).ready(function(){
-                $("#loadPlotBtn").click(function(){
-                    // Send an AJAX GET request to the Flask backend to get the plot
-                    $.get("/figure", function(data){
-                        // Insert the plot HTML into the plotContainer div
+    <script>
+        $(document).ready(function(){
+            // Attach an event listener to the form
+            $("#uploadForm").submit(function(event){
+                event.preventDefault(); // Prevent default form submission
+                
+                // Create a FormData object
+                var formData = new FormData(this);
+
+                // Send the file to the server using AJAX
+                $.ajax({
+                    url: "/process",
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(data) {
+                        // Display the plot in the plotContainer div
                         $("#plotContainer").html(data.plot);
-                    });
+                    },
+                    error: function(error) {
+                        console.error("Error:", error);
+                        alert("An error occurred while processing your request.");
+                    }
                 });
             });
-        </script>
-    </div>
+        });
+    </script>
 </body>
+
 </html>
