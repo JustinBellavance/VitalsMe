@@ -62,8 +62,8 @@ def create_and_display_plots(reference_df,test_results_df):
         y_vals = stats.norm.pdf(x_vals, mean, std_dev)
 
         smoothed_curve = go.Scatter(
-            x=x_vals,
-            y=y_vals,
+            x=x_vals.tolist(),
+            y=y_vals.tolist(),
             mode='lines',
             fill='tozeroy',  # Fill the area under the curve to zero
             fillcolor=area_color,  # Fill color
@@ -73,7 +73,7 @@ def create_and_display_plots(reference_df,test_results_df):
 
         # Create the histogram
         hist_data = go.Histogram(
-            x=data,
+            x=data.tolist(),
             nbinsx=10,
             histnorm='probability density',
             opacity=0.7,
@@ -119,50 +119,29 @@ def create_and_display_plots(reference_df,test_results_df):
 
         # Initialize shapes list (for custom shapes based on range type for the biomarker)
         shapes = []
-
-        # Set the shapes (the lines indicating the limits that for which youre seen as way above average or way below average) based on the limit_type
-        if limit_type == "upper":
-            shapes = [
-                dict(
-                    type="line",
-                    x0=limit,
-                    x1=limit,
-                    y0=0,
-                    y1=max(y_vals),  # Adjust based on your y-axis range
-                    line=dict(color="red", width=2, dash="dash")
-                )
-            ]
-        elif limit_type == "lower":
-            shapes = [
-                dict(
-                    type="line",
-                    x0=limit,
-                    x1=limit,
-                    y0=0,
-                    y1=max(y_vals),  # Adjust based on your y-axis range
-                    line=dict(color="red", width=2, dash="dash")
-                )
-            ]
-
-        elif limit_type == "range":
-            shapes = [
-                dict(
+        
+        # Dict for defining the upper or lower limit shape
+        limit_dict = dict(
                     type="line",
                     x0=limit[0],
                     x1=limit[0],
                     y0=0,
                     y1=max(y_vals),  # Adjust based on your y-axis range
-                    line=dict(color="red", width=2, dash="dash")
-                ),
-                dict(
+                    line=dict(color="red", width=2, dash="dash"))
+
+        # Set the shapes (the lines indicating the limits that for which youre seen as way above average or way below average) based on the limit_type
+        if limit_type == "upper":
+            shapes = [limit_dict]
+        elif limit_type == "lower":
+            shapes = [limit_dict]
+        elif limit_type == "range":
+            shapes = [limit_dict,dict(
                     type="line",
                     x0=limit[1],
                     x1=limit[1],
                     y0=0,
                     y1=max(y_vals),  # Adjust based on your y-axis range
-                    line=dict(color="red", width=2, dash="dash")
-                )
-            ]
+                    line=dict(color="red", width=2, dash="dash"))]
 
         # Custom layout
         fig.update_layout(
@@ -198,9 +177,14 @@ def create_and_display_plots(reference_df,test_results_df):
 
         config = {'displayModeBar': False}
 
-        plot_html = fig.to_html(full_html=False, config=config)
         
-        all_figures.append(plot_html)
+        #print(f"saving figure {i}")
+        #fig.write_image(f"figure_{i}.png")
+
+        fig_json = fig.to_dict()
+        fig_json['config'] = config 
+       
+        all_figures.append(fig_json)        
 
     return(all_figures)
         
