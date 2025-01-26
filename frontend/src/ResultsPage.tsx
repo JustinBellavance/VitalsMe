@@ -1,3 +1,9 @@
+import Plot from 'react-plotly.js';
+
+import Plots from './Plots.tsx'
+
+import { useLocation } from 'react-router-dom';
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './index.css';
@@ -311,12 +317,16 @@ export function DataTableDemo() {
 }
 
 function ResultsPage() {
+  const location = useLocation();
+  const plotData = location.state?.plotData;
+
+
   return (
     <div className="results-page flex flex-col items-center justify-center h-screen w-screen">
       <h1 className="results-title text-center">Vitals.me</h1>
       <div className="flex w-full">
         <DataTableDemo />
-        <div className="results-content flex-1 p-4">
+        <div className="results-content flex-1 p-4" style={{ width: '75%', margin: '0', overflow: 'hidden' }}>
           <p className="results-summary">
             Your blood test results show normal levels across key areas. Red blood cells are within the
             healthy range at 4.5-5.9 million cells/mcL, indicating no anemia. White blood cells are normal
@@ -327,23 +337,12 @@ function ResultsPage() {
             HDL &gt;40 mg/dL, and triglycerides &lt;150 mg/dL. Thyroid-stimulating hormone (TSH) is 0.4–4.0 mIU/L,
             indicating balanced thyroid function. Overall, your results are normal, and no further action is needed.
           </p>
-          <div className="results-metrics">
-            <div className="metric">
-              <span className="metric-label">RBC</span>
-              <span className="metric-value">4.8 million cells/mcL</span>
-            </div>
-            <div className="metric">
-              <span className="metric-label">WBC</span>
-              <span className="metric-value">6,000 cells/mcL</span>
-            </div>
-            <div className="metric">
-              <span className="metric-label">HDL</span>
-              <span className="metric-value">55 mg/dL</span>
-            </div>
-            {/* Add more metrics as needed */}
-          </div>
+          {plotData && 
+          <div style={{ width: '100%', margin: '0', overflow: 'hidden' }}>
+            <Plots allFigures={plotData} />
+          </div>}
           <Link to="/">
-            <button className="button-secondary">Back to Home</button>
+          <button className="button-secondary">Back to Home</button>
           </Link>
         </div>
       </div>

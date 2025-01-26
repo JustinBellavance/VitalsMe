@@ -1,51 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Upload</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body>
-    <h1>Upload a PDF File and Get Plot</h1>
-    <form id="uploadForm" action="/process" method="POST" enctype="multipart/form-data">
-        <label for="pdfFile">Choose a PDF file:</label>
-        <input type="file" id="pdfFile" name="pdfFile" accept="application/pdf" required>
-        <button type="submit">Upload and Show Plot</button>
-    </form>   
+import React, { useState } from 'react';
+import './App.css';
 
-    <div style="width:1000px;height:400px"> 
-        <div id="plotContainer" style="margin-top: 10px;"></div>
-    </div>
+function UploadPage() {
+  const [plotHTML, setPlotHTML] = useState<string | null>(null); // Store the plot HTML
 
-    <script>
-        $(document).ready(function(){
-            // Attach an event listener to the form
-            $("#uploadForm").submit(function(event){
-                event.preventDefault(); // Prevent default form submission
-                
-                // Create a FormData object
-                var formData = new FormData(this);
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('pdfFile', file);
 
-                // Send the file to the server using AJAX
-                $.ajax({
-                    url: "/process",
-                    type: "POST",
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function(data) {
-                        // Display the plot in the plotContainer div
-                        $("#plotContainer").html(data.plot);
-                    },
-                    error: function(error) {
-                        console.error("Error:", error);
-                        alert("An error occurred while processing your request.");
-                    }
-                });
-            });
+      try {
+        const response = await fetch('http://localhost:5000/process', {
+          method: 'POST',
+          body: formData,
         });
-    </script>
-</body>
 
-</html>
+        if (response.ok) {
+          const data = await response.json(); // Expecting `data.plot` from backend
+          setPlotHTML(data.plot); // Update the state with the plot HTML
+        } else {
+          console.error('Failed to upload file.');
+          alert('Failed to process the file.');
+        }
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        alert('An error occurred. Please try again.');
+      }
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center h-screen w-screen">
+      <h1 className="app-name">Upload Results</h1>
+      <p className="slogan">Upload your health results here.</p>
+
+      <label className="upload-button">
+        Upload PDF
+        <input
+          type="file"
+          accept="application/pdf"
+          onChange={handleFileUpload}
+          className="hidden"
+        />
+      </label>
+
+      {/* Plot Container */}
+      <div style={{ width: '1000px', height: '400px', marginTop: '20px' }}>
+        {plotHTML ? (
+          <div
+            id="plotContainer"
+            style={{ marginTop: '10px' }}
+            dangerouslySetInnerHTML={{ __html: plotHTML }} // Render plot from backend
+          />
+        ) : (
+          <p>No plot to display. Upload a file to generate the plot.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default UploadPage;
