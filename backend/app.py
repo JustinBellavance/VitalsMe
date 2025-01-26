@@ -10,19 +10,35 @@ import numpy as np
 import re
 
 from utils import create_and_display_plots
+from flask_cors import CORS
+
+from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+client = OpenAI(
+  api_key=os.getenv('OPENAI_API_KEY'),  
+)
 
 app = Flask(__name__)
 
-# Set the folder where the files will be uploaded
-app.config['UPLOAD_FOLDER'] = './uploads'
+CORS(app, origins=['http://localhost:5173'])  # Replace with your frontend's URL
+
+app.config['UPLOAD_FOLDER'] = './backend/uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+app.config['EXTRACTED_DATA_FOLDER'] = './backend/uploads/temporary_csv'
+os.makedirs(app.config['EXTRACTED_DATA_FOLDER'], exist_ok=True)
+
+app.config['PLOTLY_OUTPUT_FOLDER'] = './plots'
+os.makedirs(app.config['PLOTLY_OUTPUT_FOLDER'], exist_ok=True)
 
 # Load the reference dataframe
 reference_df = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], "reference_data.csv"))
 
-@app.route("/")
-def test_html():
-    return render_template("test.html")
+# @app.route("/")
+# def test_html():
+#     return render_template("test.html")
 
 # Allows to upload the pdf, transform the tables into pd.dataframes, and save these as csv files
 @app.route('/process', methods=['POST'])
@@ -49,7 +65,8 @@ def process_file():
     all_figures = create_and_display_plots(reference_df,test_results_df)
 
     # TODO : send everything instead of just the last one
-    return jsonify({'plot': all_figures[-1]}) 
+    return jsonify(all_figures) 
 
 if __name__ == "__main__":
+    
     app.run(debug=True)

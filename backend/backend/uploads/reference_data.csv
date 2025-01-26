@@ -1,0 +1,9 @@
+Vitals,vitals_short_name,Mean,Variance,Reference values,Units
+Hemoglobin (Hb) (Male),hemoglobin,150,100,125–170,g/L
+White blood cell (WBC) count,white_blood_cell_count,7,4,3.5–10.5,*10^9/L
+Fasting serum glucose,fasting_glucose,5,1.5,4.0-6.0,mmol/L
+Cholesterol total serum,total_cholesterol,4.8,1.5,<5.2,mmol/L
+Cholesterol low-density lipoprotein (LDL) serum,ldl_cholesterol,2.9,1,<3.37,mmol/L
+Cholesterol high-density lipoprotein (HDL) serum,hdl_cholesterol,1.2,0.1,>0.9,mmol/L
+Creatinine serum (Male),creatinine,84,50,62–106,µmol/L
+Alanine aminotransferase (ALT or SGPT),alanine,40,150,17–63,U/L
