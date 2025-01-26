@@ -15,16 +15,17 @@ const Plots = ({ allFigures }: { allFigures: Array<any> }) => {
             data={fig.data}
             layout={{
                 ...fig.layout,
-                width: 300,
-                height: 350, 
+                width: 550,
+                height: 250, 
                 margin: {
-                    t: 50, // Top margin
-                    r: 0, // Right margin
+                    t: 30, // Top margin
+                    r: 50, // Right margin
                     b: 0, // Bottom margin
-                    l: 0, // Left margin
+                    l: 50, // Left margin
                   },
               }}
             config={fig.config}
+            style={{ width: '100%', height: '100%' }} // Ensure the plot takes full space of the container
           />
         </div>
       ))}
