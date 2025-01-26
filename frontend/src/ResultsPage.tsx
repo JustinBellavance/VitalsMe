@@ -1,8 +1,7 @@
 import Plot from 'react-plotly.js';
 import Plots from './Plots.tsx'
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import './index.css';
 import {
   SortingState,
@@ -33,6 +32,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Maximize, Minimize, Send } from '@mynaui/icons-react';
+import vitalsme from './assets/vitalsss.png';
 
 const patientData = {
   name: "Bob Laiponje",
@@ -156,8 +156,16 @@ function ResultsPage() {
       <div className="grid grid-cols-4 gap-4 p-4 h-screen">
         {/* Left column */}
         <div className="col-span-1">
-          {/* Vitals.me text centered above table */}
-          <h1 className="text-[#70b3b3] results-title app-name text-center mb-4">Vitals.me</h1>
+          {/* Centered Logo Container */}
+          <div className="flex justify-center mb-8">
+            <Link to="/">
+              <img 
+                src={vitalsme} 
+                alt="Vitals.me Logo"
+                className="h-20 w-50 object-contain transition-transform duration-300 hover:scale-105 cursor-pointer" 
+              />
+            </Link>
+          </div>
           
           {/* Patient info and table */}
           <div className="mb-2">
