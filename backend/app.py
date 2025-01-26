@@ -8,8 +8,9 @@ import plotly.graph_objects as go
 import scipy.stats as stats
 import numpy as np
 import re
-
-from utils import create_and_display_plots
+print(os.getcwd())
+# import utils
+from backend.utila.plots import create_and_display_plots
 from flask_cors import CORS
 
 from openai import OpenAI
