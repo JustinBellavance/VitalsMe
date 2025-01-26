@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 import scipy.stats as stats
 import numpy as np
 import re
+import json
 
 from backend.utila.plots import create_and_display_plots
 from flask_cors import CORS
@@ -168,6 +169,10 @@ def process_file():
 
         personal_info_df = pd.DataFrame(personal_info[1:], columns=personal_info[0])
         test_results_df = pd.DataFrame(test_results[1:], columns=test_results[0])
+
+        # Convert to JSON
+        results_json = test_results_df.to_json(orient='records')
+        print(results_json)
         
     print(f"personal info : {personal_info}")
 
@@ -180,7 +185,10 @@ def process_file():
         'ai_response' : ai_response,
         'personal_info' : personal_info,
         'all_figures' : all_figures,
+        'user_results': test_results
     }
+
+    
 
     return jsonify(final_result) 
 

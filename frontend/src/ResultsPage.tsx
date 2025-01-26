@@ -101,13 +101,14 @@ function ResultsPage() {
   var plotData = undefined;
   var ai_response = undefined;
   var personal_info = undefined;
+  var user_results = undefined;
   
   if (all_data !== undefined){
     var plotData = all_data['all_figures'];
     var ai_response = all_data['ai_response'];
     var personal_info = all_data['personal_info'];
+    var user_results = all_data['user_results'];
   }
-
 
   return (
     <div className="results-page h-screen w-screen overflow-y-auto">
@@ -153,10 +154,10 @@ function ResultsPage() {
                   ))}
                 </TableHeader>
                 <TableBody>
-                  {testResults.map((result, index) => (
+                  {user_results.map((, index) => (
                     <TableRow key={index}>
-                      <TableCell>{result.vitals}</TableCell>
-                      <TableCell>{result.results}</TableCell>
+                      <TableCell>{user_results['vitals']}</TableCell>
+                      <TableCell>{user_results['results']}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
