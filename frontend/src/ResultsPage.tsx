@@ -122,9 +122,9 @@ function ResultsPage() {
           {/* Patient info above table */}
           <div className="mb-2">
             <div className="header text-left">
-              <p className="text-3xl font-bold text-black">Hello, {patientData.name}</p>
+              <p className="text-3xl font-bold text-black">Hello, {personal_info[0][1]}</p>
               <p className="text-sm text-gray-800">
-                Age: {patientData.age} | Sex: {patientData.sex}
+                Age: {personal_info[1][1]} | Sex: {personal_info[2][1]}
               </p>
             </div>
           </div>
