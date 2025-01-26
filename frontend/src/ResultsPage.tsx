@@ -2,6 +2,7 @@ import Plot from 'react-plotly.js';
 import Plots from './Plots.tsx'
 import { useLocation, Link } from 'react-router-dom';
 import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import './index.css';
 import {
   SortingState,
@@ -128,12 +129,29 @@ function ResultsPage() {
     var user_results = all_data['user_results'];
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (message.trim()) {
       setChatHistory([...chatHistory, { text: message, sender: 'user' }]);
       setMessage('');
       // Add API call to chatbot here
+
+      try {
+        const response = await fetch('http://localhost:5000/chat', {
+          method: 'POST',
+          body: message,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("CHAT RESULTS ", data)
+        } else {
+          alert('Failed to process the file.');
+        }
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        alert('An error occurred. Please try again.');
+      }
     }
   };
 
@@ -175,6 +193,9 @@ function ResultsPage() {
               <p className="text-sm">
                 {personal_info[1][1]}{personal_info[2][1].charAt(0).toUpperCase()}
               </p>
+              <p className="text-sm text-gray-800">
+              Test performed on the {personal_info[3][1]}
+              </p>
             </div>
           </div>
 
@@ -203,7 +224,6 @@ function ResultsPage() {
                 </TableHeader>
                 <TableBody>
                   {user_results.slice(1).map((result, index) => {
-                    console.log(result); // Print each result object to the console
                     return (
                       <TableRow key={index}>
                         <TableCell>{result[0]}</TableCell>
@@ -235,7 +255,13 @@ function ResultsPage() {
             </button>
 
             {!isExpanded && (
-              <p className="text-gray-800 pl-12">{ai_response}</p>
+              <p className="text-gray-800 pl-12">
+                <ReactMarkdown>
+
+                {ai_response}
+                </ReactMarkdown>
+
+                </p>
             )}
           </div>
 
@@ -252,42 +278,88 @@ function ResultsPage() {
               <div className="fixed inset-0 bg-black/50 z-40" />
               <div className="fixed inset-0 z-50 bg-[#f5d2d3] p-8 flex flex-col">
                 <div className="flex-1 overflow-y-auto">
-                  <div className="max-w-6xl mx-auto">
-                    <button onClick={() => setIsExpanded(false)} className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100">
-                      <div className="w-6 h-6 text-gray-600">
-                        <Minimize width={24} height={24} stroke="#4B5563" />
-                      </div>
-                    </button>
-                    <h2 className="text-2xl font-bold mb-6 mt-12 pl-12 text-[#3d98a3]">Results Summary</h2>
-                    <p className="text-gray-800 mb-8">{fullText}</p>
-                    
-                    {/* Chat History */}
-                    <div className="flex-grow mb-4">
-                      {chatHistory.map((chat, index) => (
-                        <div key={index} className={`flex ${chat.sender === 'user' ? 'justify-end' : 'justify-start'} mb-2`}>
-                          <div className={`max-w-[70%] p-3 rounded-lg ${chat.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}>
-                            {chat.message}
-                          </div>
-                        </div>
-                      ))}
+
+                <div className="max-w-6xl mx-auto">
+                  <button
+                    onClick={() => setIsExpanded(false)}
+                    className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100"
+                  >
+                    <div className="w-6 h-6 text-gray-600">
+                      <Minimize width={24} height={24} stroke="#4B5563" />
                     </div>
+                  </button>
+                  <h2 className="text-2xl font-bold mb-6 mt-12 pl-12 text-[#3d98a3]">Results Summary</h2>
+                  <p className="text-gray-800 mb-8">                
+                    <ReactMarkdown>
+                      {ai_response}
+                    </ReactMarkdown>
+                  </p>
+
+                  {/* Chat History */}
+                  <div className="flex-grow mb-4">
+                    {chatHistory.map((chat, index) => (
+                      <div key={index} className={`flex ${chat.sender === 'user' ? 'justify-end' : 'justify-start'} mb-2`}>
+                        <div className={`max-w-[70%] p-3 rounded-lg ${
+                          chat.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-600'
+                        }`}>
+                          <ReactMarkdown>
+                            {chat.message}
+                          </ReactMarkdown>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                {/* Chat Input */}
-                <div className="mt-auto pt-4 border-t border-gray-200">
-                  <form onSubmit={handleChatSubmit} className="flex gap-2 max-w-6xl mx-auto">
-                    <input
-                      type="text"
-                      value={message}
-                      onChange={handleChatInput}
-                      placeholder="Ask about your results..."
-                      className="flex-grow p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button type="submit" className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                      <Send width={20} height={20} />
-                    </button>
-                  </form>
+                  {/* Chat Input */}
+                  <div className="mt-auto pt-4 border-t border-gray-200">
+                    <form onSubmit={async (e) => {
+                      e.preventDefault();
+                      if (message.trim()) {
+                        setChatHistory([...chatHistory, { message, sender: 'user' }]);
+                        setMessage('');
+
+                        try {
+                          const response = await fetch('http://localhost:5000/chat', {
+                            method: 'POST',
+                            body: message,
+                          });
+                  
+                          if (response.ok) {
+                            const data = await response.json();
+                            console.log("CHAT RESULTS ", data)
+
+                            // Add the chatbot's response to chat history
+                            setChatHistory(prevChatHistory => [
+                              ...prevChatHistory,
+                              { message: data, sender: 'assistant' }
+                            ]);
+                            
+                          } else {
+                            alert('Failed to process the file.');
+                          }
+                        } catch (error) {
+                          console.error('Error uploading file:', error);
+                          alert('An error occurred. Please try again.');
+                        }
+                      }
+                    }} 
+                    className="flex gap-2 max-w-6xl mx-auto">
+                      <input
+                        type="text"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Ask about your results..."
+                        className="flex-grow p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <button
+                        type="submit"
+                        className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                      >
+                        <Send width={20} height={20} />
+                      </button>
+                    </form>
+                  </div>
                 </div>
               </div>
             </>

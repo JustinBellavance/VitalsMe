@@ -43,16 +43,31 @@ reference_df_text = reference_df.to_string(index=False)
 # def test_html():
 #     return render_template("test.html")
 
-def get_ai_response(personal_info_df, test_results_df):
-    personal_info_text = personal_info_df.drop(0).to_string(index=False) # drop the name!
-    test_results_text = test_results_df.to_string(index=False)
+PERSONAL_INFO_DF_TOP = pd.DataFrame()
+TEST_RESULTS_DF_TOP = pd.DataFrame()
+
+def get_ai_response(prompt = None):
+    global PERSONAL_INFO_DF_TOP  # Access the global variable
+    global TEST_RESULTS_DF_TOP  # Access the global variable
     
-    user_prompt = "Give me an extremly brief analysis of my results, highlighting only the most important findings."
+    personal_info_text = PERSONAL_INFO_DF_TOP.to_string(index=False, header=False) # drop the name!
+
+    print(f"{personal_info_text=}")
+    test_results_text = TEST_RESULTS_DF_TOP.to_string(index=False)
+    
+    
+    if not prompt:
+        user_prompt = "Give me an extremly brief analysis of my results, highlighting only the most important findings."
+    else:
+        user_prompt = prompt + " Make it extremely brief, only giving the most important information."
+        
+    print(user_prompt)
 
     # Prepare system message with extracted data
     system_message = (
         "You are a highly experienced and empathetic medical doctor. "
         "You analyze patient test results and provide medical advice in a compassionate manner. "
+        "You get straight to the point, you do not say hi or welcome the person. "
         "Here's the patient's personal information:\n"
         f"{personal_info_text}\n\n"
         "Here are the patient's test results:\n"
@@ -153,6 +168,14 @@ def get_ai_response(personal_info_df, test_results_df):
 
 #     return render_template('test_ai.html')
 
+@app.route('/chat', methods=['POST'])
+def chat():
+    message = request.data.decode('utf-8')  # Decode the raw bytes to a string
+
+    print(f"{message=}")
+    return jsonify(get_ai_response(prompt = message))
+    
+
 # Allows to upload the pdf, transform the tables into pd.dataframes, and save these as csv files
 @app.route('/process', methods=['POST'])
 def process_file():
@@ -173,14 +196,19 @@ def process_file():
 
         personal_info_df = pd.DataFrame(personal_info[1:], columns=personal_info[0])
         test_results_df = pd.DataFrame(test_results[1:], columns=test_results[0])
+        
+        global PERSONAL_INFO_DF_TOP  # Access the global variable
+        global TEST_RESULTS_DF_TOP  # Access the global variable
+
+        PERSONAL_INFO_DF_TOP = personal_info_df
+
+        TEST_RESULTS_DF_TOP = test_results_df
 
         # Convert to JSON
         results_json = test_results_df.to_json(orient='records')
         print(results_json)
-        
-    print(f"personal info : {personal_info}")
 
-    ai_response = get_ai_response(personal_info_df, test_results_df)
+    ai_response = get_ai_response()
     
     # Load all figures generated for each biomarker    
     all_figures = create_and_display_plots(reference_df,test_results_df,bad_results_first=True)
@@ -191,8 +219,6 @@ def process_file():
         'all_figures' : all_figures,
         'user_results': test_results
     }
-
-    
 
     return jsonify(final_result) 
 
