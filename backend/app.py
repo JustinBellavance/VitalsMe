@@ -40,7 +40,7 @@ reference_df_text = reference_df.to_string(index=False)
 #     return render_template("test.html")
 
 def get_ai_response(personal_info_df, test_results_df):
-    personal_info_text = personal_info_df.to_string(index=False)
+    personal_info_text = personal_info_df.drop(0).to_string(index=False) # drop the name!
     test_results_text = test_results_df.to_string(index=False)
     
     user_prompt = "Give me an extremly brief analysis of my results, highlighting only the most important findings."
