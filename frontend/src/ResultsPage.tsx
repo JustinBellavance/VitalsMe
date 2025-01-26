@@ -167,149 +167,149 @@ function ResultsPage() {
   const handleChatInput = (e) => {
     e.stopPropagation(); // Prevent event bubbling
     setMessage(e.target.value);
+    
   };
 
   return (
-    <div className="results-page min-h-screen w-screen overflow-hidden">
+    <div className="results-page h-screen w-screen overflow-hidden">
       <div className="grid grid-cols-4 gap-4 p-4 h-screen bg-[]">
         {/* Left column */}
-        <div className="col-span-1">
-          {/* Header Container with explicit z-index and full width */}
-          <div className=" rounded-lg p-6 w-full h-140px">
+        <div className="col-span-1 flex flex-col h-full">
+          {/* Fixed Header Container - reduced padding-top */}
+          <div className="rounded-lg pt-2 px-6 w-full">
             {/* Logo Container */}
-            <div className="flex justify-center mb-4">
+            <div className="flex justify-center">
               <Link to="/">
                 <img 
                   src={vitalsme} 
                   alt="Vitals.me Logo"
-                  className="h-20 w-50 object-contain transition-transform duration-300 hover:scale-105 cursor-pointer" 
+                  className="pb-6 h-32 w-auto object-contain transition-transform duration-300 hover:scale-105 cursor-pointer" 
                 />
               </Link>
             </div>
             
-
             <div className="text-black text-left pl-4">
               <p className="text-3xl font-bold">Hello, {personal_info[0][1]}</p>
               <p className="text-sm">
                 {personal_info[1][1]}{personal_info[2][1].charAt(0).toUpperCase()}
               </p>
-              <p className="text-sm text-gray-800">
-              Test performed on the {personal_info[3][1]}
-              </p>
             </div>
           </div>
 
-          {/* Table container */}
-          <div className="rounded-md border h-[calc(100vh-250px)]">
-            <div className="h-dvh">
-              <Table className="table">
-                <TableHeader className="sticky top-0 bg-gray-50 z-10">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <TableHead 
-                          key={header.id}
-                          className="bg-gray-50 text-gray-700 font-semibold text-lg text-center"
-                        >
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {user_results.slice(1).map((result, index) => {
-                    return (
-                      <TableRow key={index}>
-                        <TableCell>{result[0]}</TableCell>
-                        <TableCell>{result[2] + ' ' + result[4]}</TableCell>
+          {/* Scrollable Table Container */}
+          <div className="flex-1 overflow-y-auto ">
+            <div className="rounded-md border h-[calc(100vh-250px)]">
+              <div className="h-dvh">
+                <Table className="table">
+                  <TableHeader className="sticky top-0 bg-gray-50 z-10">
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <TableRow key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
+                          <TableHead 
+                            key={header.id}
+                            className="bg-gray-50 text-gray-700 font-semibold text-lg text-center"
+                          >
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
+                          </TableHead>
+                        ))}
                       </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+                    ))}
+                  </TableHeader>
+                  <TableBody>
+                    {user_results.slice(1).map((result, index) => {
+                      return (
+                        <TableRow key={index}>
+                          <TableCell>{result[0]}</TableCell>
+                          <TableCell>{result[2] + ' ' + result[4]}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Right column */}
+        {/* Right side content */}
         <div className="col-span-3 flex flex-col h-full">
-          {/* Base Summary Container */}
-          <div className="bg-[#f5d2d3] rounded-lg p-6 relative h-140px">
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100"
-            >
-              <div className="w-6 h-6 text-gray-600">
-                {isExpanded ? (
-                  <Minimize width={24} height={24} stroke="#4B5563" />
-                ) : (
-                  <Maximize width={24} height={24} stroke="#4B5563" />
-                )}
-              </div>
-            </button>
+          {/* Fixed chat header/input */}
+          <div className="flex-none">
+            <div className="bg-[#f5d2d3] rounded-lg p-6 relative h-140px">
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100"
+              >
+                <div className="w-6 h-6 text-gray-600">
+                  {isExpanded ? (
+                    <Minimize width={24} height={24} stroke="#4B5563" />
+                  ) : (
+                    <Maximize width={24} height={24} stroke="#4B5563" />
+                  )}
+                </div>
+              </button>
 
-            {!isExpanded && (
-              <p className="text-gray-800 pl-12">
-                <ReactMarkdown>
-
-                {ai_response}
-                </ReactMarkdown>
-
+              {!isExpanded && (
+                <p className="text-gray-800 pl-12">
+                  <ReactMarkdown>
+                    {ai_response}
+                  </ReactMarkdown>
                 </p>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Scrollable Plots Container */}
-          {!isExpanded && plotData && (
-            <div className="flex-1 overflow-y-auto p-4">
-              <Plots allFigures={plotData} />
-            </div>
-          )}
+          <div className="overflow-y-auto h-[calc(100vh-200px)]">
+            {!isExpanded && plotData && (
+              <div className="h-full p-4">
+                <Plots allFigures={plotData} />
+              </div>
+            )}
+          </div>
 
           {/* Expanded State */}
           {isExpanded && (
             <>
               <div className="fixed inset-0 bg-black/50 z-40" />
               <div className="fixed inset-0 z-50 bg-[#f5d2d3] p-8 flex flex-col">
-                <div className="flex-1 overflow-y-auto">
-
-                <div className="max-w-6xl mx-auto">
-                  <button
-                    onClick={() => setIsExpanded(false)}
-                    className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100"
-                  >
-                    <div className="w-6 h-6 text-gray-600">
-                      <Minimize width={24} height={24} stroke="#4B5563" />
-                    </div>
-                  </button>
-                  <h2 className="text-2xl font-bold mb-6 mt-12 pl-12 text-[#3d98a3]">Results Summary</h2>
-                  <p className="text-gray-800 mb-8">                
-                    <ReactMarkdown>
-                      {ai_response}
-                    </ReactMarkdown>
-                  </p>
-
-                  {/* Chat History */}
-                  <div className="flex-grow mb-4">
-                    {chatHistory.map((chat, index) => (
-                      <div key={index} className={`flex ${chat.sender === 'user' ? 'justify-end' : 'justify-start'} mb-2`}>
-                        <div className={`max-w-[70%] p-3 rounded-lg ${
-                          chat.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-600'
-                        }`}>
-                          <ReactMarkdown>
-                            {chat.message}
-                          </ReactMarkdown>
-                        </div>
+                <div className="flex-1 overflow-y-scroll">
+                  <div className="max-w-6xl mx-auto">
+                    <button
+                      onClick={() => setIsExpanded(false)}
+                      className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100"
+                    >
+                      <div className="w-6 h-6 text-gray-600">
+                        <Minimize width={24} height={24} stroke="#4B5563" />
                       </div>
-                    ))}
+                    </button>
+                    <h2 className="text-2xl font-bold mb-6 mt-12 pl-12 text-[#3d98a3]">Results Summary</h2>
+                    <p className="text-gray-800 mb-8">                
+                      <ReactMarkdown>
+                        {ai_response}
+                      </ReactMarkdown>
+                    </p>
+
+                    {/* Chat History */}
+                    <div className="flex-grow mb-4">
+                      {chatHistory.map((chat, index) => (
+                        <div key={index} className={`flex ${chat.sender === 'user' ? 'justify-end' : 'justify-start'} mb-2`}>
+                          <div className={`max-w-[70%] p-3 rounded-lg ${
+                            chat.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-600'
+                          }`}>
+                            <ReactMarkdown>
+                              {chat.message}
+                            </ReactMarkdown>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
                   {/* Chat Input */}
                   <div className="mt-auto pt-4 border-t border-gray-200">
@@ -350,7 +350,7 @@ function ResultsPage() {
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder="Ask about your results..."
-                        className="flex-grow p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex-grow p-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                       <button
                         type="submit"

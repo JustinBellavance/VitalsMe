@@ -79,8 +79,13 @@ function UploadPage() {
       {loading && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <div className="bg-white p-8 rounded-lg w-[300px]">
-            <Progress value={progress} className="w-full mb-4" />
-            <p className="text-center text-lg font-semibold text-[#3d98a3]">
+            <div className="w-full h-2 bg-gray-200 rounded-full">
+              <div 
+                className="h-full bg-[#3d98a3] rounded-full transition-all duration-300 ease-in-out"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <p className="text-center text-lg font-semibold text-[#3d98a3] mt-4">
               Processing...
             </p>
           </div>

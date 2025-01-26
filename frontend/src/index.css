@@ -98,3 +98,7 @@ body {
 .overlay.active {
   display: block;
 }
+
+.plots-container {
+  height: calc(100vh-200px);
+}
