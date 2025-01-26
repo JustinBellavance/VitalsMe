@@ -350,7 +350,7 @@ function ResultsPage() {
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder="Ask about your results..."
-                        className="flex-grow p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex-grow p-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                       <button
                         type="submit"
