@@ -1,0 +1,16 @@
+@font-face {
+  font-family: 'Moderna';
+  src: url('./fonts/MODERNA_.TTF') format('truetype');
+}
+
+.app-name {
+  font-family: 'Moderna', sans-serif;
+}
+
+.vitalsme-font {
+  font-family: 'Moderna', sans-serif;
+}
+
+.table-container {
+  margin: 0 20px;
+}
