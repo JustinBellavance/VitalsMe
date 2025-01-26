@@ -22,24 +22,28 @@ function App() {
 function LandingPage() {
   return (
     <div className="flex flex-col items-center justify-center h-screen w-screen">
-      <div className="flex items-center justify-center gap-6">
+      <div className="flex items-center justify-center gap-12">
         <img 
           src={vitalsLogo}
           alt="Vitals.me Logo" 
-          className="h-16 w-16 my-auto"
+          className="h-32 w-32"
         />
-        <h1 className="app-name my-auto">Vitals.me</h1>
+        <h1 className="app-name my-16 -mx-12 font-black text-8xl">Vitals.me</h1>
       </div>
-      <p className="slogan">Your health, simplified.</p>
-      <div className="button-container">
-        <Link to="/login">
-          <button className="button">Login</button>
-        </Link>
-        <Link to="/upload">
-          <button className="button">Upload Results</button>
-        </Link>
+      <p className="slogan text-3xl mt-8" style={{ color: '#3d98a3' }}>
+        Your <span style={{ color: '#c80b16' }} className="font-bold">health</span>, simplified.
+      </p>
+      <div className="flex flex-col items-center gap-8 mt-8">
+        <div className="flex justify-center gap-8">
+          <Link to="/login">
+            <button className="button text-2xl px-8 py-4">Login</button>
+          </Link>
+          <Link to="/upload">
+            <button className="button text-2xl px-8 py-4">Upload Results</button>
+          </Link>
+        </div>
         <Link to="/results">
-          <button className="button">View Results</button>
+          <button className="button text-2xl px-8 py-4">View Results</button>
         </Link>
       </div>
     </div>
