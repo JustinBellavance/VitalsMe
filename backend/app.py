@@ -8,7 +8,7 @@ import scipy.stats as stats
 import numpy as np
 import re
 
-from utils import create_and_display_plots
+from backend.utila.plots import create_and_display_plots
 from flask_cors import CORS
 
 from openai import OpenAI
@@ -177,7 +177,7 @@ def process_file():
     ai_response = get_ai_response(personal_info_df, test_results_df)
     
     # Load all figures generated for each biomarker    
-    all_figures = create_and_display_plots(reference_df,test_results_df)
+    all_figures = create_and_display_plots(reference_df,test_results_df,bad_results_first=True)
     
     final_result = {
         'ai_response' : ai_response,
