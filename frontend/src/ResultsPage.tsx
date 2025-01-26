@@ -154,12 +154,15 @@ function ResultsPage() {
                   ))}
                 </TableHeader>
                 <TableBody>
-                  {user_results.map((, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{user_results['vitals']}</TableCell>
-                      <TableCell>{user_results['results']}</TableCell>
-                    </TableRow>
-                  ))}
+                  {user_results.slice(1).map((result, index) => {
+                    console.log(result); // Print each result object to the console
+                    return (
+                      <TableRow key={index}>
+                        <TableCell>{result[0]}</TableCell>
+                        <TableCell>{result[2] + ' ' + result[4]}</TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
@@ -172,9 +175,10 @@ function ResultsPage() {
             {ai_response}
           </p> }
           {plotData && 
-          <div style={{ width: '100%', margin: '0', overflow: 'hidden' }}>
-            <Plots allFigures={plotData} />
-          </div>}
+            <div style={{ width: '100%', margin: '0', overflow: 'hidden' }}>
+              <Plots allFigures={plotData} />
+            </div>
+          }
           {/* <Link to="/">
           <button className="button-secondary">Back to Home</button>
           </Link> */}
