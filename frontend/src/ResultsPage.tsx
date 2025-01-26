@@ -97,7 +97,17 @@ function ResultsPage() {
   });
 
   const location = useLocation();
-  const plotData = location.state?.plotData;
+  var all_data = location.state?.plotData;
+  var plotData = undefined;
+  var ai_response = undefined;
+  var personal_info = undefined;
+  
+  if (all_data !== undefined){
+    var plotData = all_data['all_figures'];
+    var ai_response = all_data['ai_response'];
+    var personal_info = all_data['personal_info'];
+  }
+
 
   return (
     <div className="results-page h-screen w-screen overflow-y-auto">
@@ -157,9 +167,9 @@ function ResultsPage() {
 
         {/* Results summary spanning 2 columns */}
         <div className="col-span-3 row-span-3">
-          <p className="results-summary">
-            Your blood test results show normal levels across key areas. No further action is needed.
-          </p>
+          {ai_response && <p className="results-summary">
+            {ai_response}
+          </p> }
           {plotData && 
           <div style={{ width: '100%', margin: '0', overflow: 'hidden' }}>
             <Plots allFigures={plotData} />

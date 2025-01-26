@@ -31,7 +31,7 @@ def create_and_display_plots(reference_df,test_results_df):
         user_flag = test_results_df["Flags"][i]
 
         # Set plot colors if user biomarker result is significantly out of range (red if it is, green if not)
-        if user_flag == "L":
+        if user_flag == "L" or user_flag == "H":
             hist_color = 'rgba(0, 0, 0, 0.29)'
             curve_color = 'rgba(241, 66, 66, 0.8)'
             area_color = 'rgba(241, 66, 66, 0.8)'

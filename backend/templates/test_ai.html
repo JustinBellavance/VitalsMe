@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Upload and AI Response</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Upload a PDF File and Get AI Response</h1>
+    <form id="uploadForm" action="/test_ai" method="POST" enctype="multipart/form-data">
+        <label for="pdfFile">Choose a PDF file:</label>
+        <input type="file" id="pdfFile" name="pdfFile" accept="application/pdf" required>
+        <br><br>
+        <label for="prompt">Enter your prompt:</label>
+        <input type="text" id="prompt" name="prompt" required>
+        <br><br>
+        <button type="submit">Upload and Get AI Response</button>
+    </form>   
+
+    <div id="aiResponseContainer" style="margin-top: 20px;">
+        {% if ai_response %}
+            <h2>AI Response:</h2>
+            <p>{{ ai_response }}</p>
+        {% endif %}
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            // Attach an event listener to the form
+            $("#uploadForm").submit(function(event){
+                event.preventDefault(); // Prevent default form submission
+                
+                // Create a FormData object
+                var formData = new FormData(this);
+
+                // Send the file and prompt to the server using AJAX
+                $.ajax({
+                    url: "/test_ai",
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(data) {
+                        // Display the AI response in the aiResponseContainer div
+                        $("#aiResponseContainer").html('<h2>AI Response:</h2><p>' + data.ai_response + '</p>');
+                    },
+                    error: function(error) {
+                        console.error("Error:", error);
+                        alert("An error occurred while processing your request.");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
