@@ -141,7 +141,7 @@ function ResultsPage() {
   };
 
   return (
-    <div className="results-page min-h-screen w-screen overflow-y-auto">
+    <div className="results-page min-h-screen w-screen overflow-hidden">
       <div className="grid grid-cols-4 gap-4 p-4 h-screen">
         {/* Left column */}
         <div className="col-span-1">
@@ -195,9 +195,9 @@ function ResultsPage() {
         </div>
 
         {/* Right column */}
-        <div className="col-span-3">
+        <div className="col-span-3 flex flex-col h-full">
           {/* Base Summary Container */}
-          <div className="bg-white rounded-lg p-6 relative">
+          <div className="bg-white rounded-lg p-6 relative mb-4">
             <button
               onClick={() => setIsExpanded(!isExpanded)}
               className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100"
@@ -215,6 +215,13 @@ function ResultsPage() {
               <p className="text-gray-800 pl-12">{previewText}</p>
             )}
           </div>
+
+          {/* Scrollable Plots Container */}
+          {!isExpanded && plotData && (
+            <div className="flex-1 overflow-y-auto p-4">
+              <Plots allFigures={plotData} />
+            </div>
+          )}
 
           {/* Expanded State */}
           {isExpanded && (
@@ -234,7 +241,7 @@ function ResultsPage() {
                   <p className="text-gray-800 mb-8">{fullText}</p>
 
                   {/* Chat History */}
-                  <div className="flex-grow overflow-y-auto mb-4 px-4">
+                  <div className="flex-grow overflow-y-scroll mb-4 px-4">
                     {chatHistory.map((chat, index) => (
                       <div key={index} className={`flex ${chat.sender === 'user' ? 'justify-end' : 'justify-start'} mb-2`}>
                         <div className={`max-w-[70%] p-3 rounded-lg ${
@@ -274,13 +281,6 @@ function ResultsPage() {
                 </div>
               </div>
             </>
-          )}
-
-          {/* Plots */}
-          {plotData && (
-            <div className="w-full mt-4">
-              <Plots allFigures={plotData} />
-            </div>
           )}
         </div>
       </div>
