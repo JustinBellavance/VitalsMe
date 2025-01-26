@@ -3,7 +3,6 @@ import Plots from './Plots.tsx'
 import { useLocation, Link } from 'react-router-dom';
 import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Link } from 'react-router-dom';
 import './index.css';
 import {
   SortingState,
