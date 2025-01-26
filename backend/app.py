@@ -23,14 +23,11 @@ app = Flask(__name__)
 
 CORS(app, origins=['http://localhost:5173'])  # Replace with your frontend's URL
 
-app.config['UPLOAD_FOLDER'] = './backend/uploads'
+app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-app.config['EXTRACTED_DATA_FOLDER'] = './backend/uploads/temporary_csv'
+app.config['EXTRACTED_DATA_FOLDER'] = 'uploads/temporary_csv'
 os.makedirs(app.config['EXTRACTED_DATA_FOLDER'], exist_ok=True)
-
-app.config['PLOTLY_OUTPUT_FOLDER'] = './plots'
-os.makedirs(app.config['PLOTLY_OUTPUT_FOLDER'], exist_ok=True)
 
 # Load the reference dataframe
 reference_df = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], "reference_data.csv"))
