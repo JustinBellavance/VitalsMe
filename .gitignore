@@ -3,5 +3,5 @@ backend/uploads
 .env
 __pycache__
 backend/plots
-*.png
 .env
+*.png

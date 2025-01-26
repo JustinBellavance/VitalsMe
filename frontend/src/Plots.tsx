@@ -5,7 +5,7 @@ import Plot from 'react-plotly.js';
 const Plots = ({ allFigures }: { allFigures: Array<any> }) => {
     useEffect(() => {
         // Log all figures to the console when the component mounts
-        console.log(allFigures);
+        console.log("allFigures", allFigures);
     }, [allFigures]);
   return (
     <div className="plots-container">

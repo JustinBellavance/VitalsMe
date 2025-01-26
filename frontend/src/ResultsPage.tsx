@@ -115,7 +115,18 @@ function ResultsPage() {
   });
 
   const location = useLocation();
-  const plotData = location.state?.plotData;
+  var all_data = location.state?.plotData;
+  var plotData = undefined;
+  var ai_response = undefined;
+  var personal_info = undefined;
+  var user_results = undefined;
+  
+  if (all_data !== undefined){
+    var plotData = all_data['all_figures'];
+    var ai_response = all_data['ai_response'];
+    var personal_info = all_data['personal_info'];
+    var user_results = all_data['user_results'];
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -151,9 +162,9 @@ function ResultsPage() {
           {/* Patient info and table */}
           <div className="mb-2">
             <div className="header text-left">
-              <p className="text-3xl font-bold text-black">Hello, {patientData.name}</p>
+              <p className="text-3xl font-bold text-black">Hello, {personal_info[0][1]}</p>
               <p className="text-sm text-gray-800">
-                {patientData.age}{patientData.sex.charAt(0).toUpperCase()}
+                {personal_info[1][1]}{personal_info[2][1].charAt(0).toUpperCase()}
               </p>
             </div>
           </div>
@@ -182,12 +193,15 @@ function ResultsPage() {
                   ))}
                 </TableHeader>
                 <TableBody>
-                  {testResults.map((result, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{result.vitals}</TableCell>
-                      <TableCell>{result.results}</TableCell>
-                    </TableRow>
-                  ))}
+                  {user_results.slice(1).map((result, index) => {
+                    console.log(result); // Print each result object to the console
+                    return (
+                      <TableRow key={index}>
+                        <TableCell>{result[0]}</TableCell>
+                        <TableCell>{result[2] + ' ' + result[4]}</TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
@@ -212,7 +226,7 @@ function ResultsPage() {
             </button>
 
             {!isExpanded && (
-              <p className="text-gray-800 pl-12">{previewText}</p>
+              <p className="text-gray-800 pl-12">{ai_response}</p>
             )}
           </div>
 
@@ -238,7 +252,7 @@ function ResultsPage() {
                     </div>
                   </button>
                   <h2 className="text-2xl font-bold mb-6 mt-12 pl-12">Results Summary</h2>
-                  <p className="text-gray-800 mb-8">{fullText}</p>
+                  <p className="text-gray-800 mb-8">{ai_response}</p>
 
                   {/* Chat History */}
                   <div className="flex-grow overflow-y-scroll mb-4 px-4">

@@ -1,3 +1,5 @@
+
+
 from flask import Flask, jsonify, request, render_template
 import numpy as np
 import plotly.graph_objects as go
@@ -11,12 +13,17 @@ import re
 '''
 Takes as input a reference dataframe with reference means, variances and ranges for
 biomarkers, and a test_results from a user (as pd dataframes), and generates plots
-for the user biomarkers results compared to the population distribution and mean
+for the user biomarkers results compared to the population distribution and mean.
+
+Order the plots with first the unhealthy results, when bad_results_first = True
 '''
 
-def create_and_display_plots(reference_df,test_results_df):
+def create_and_display_plots(reference_df,test_results_df,bad_results_first=True):
 
     all_figures = []
+    if bad_results_first:
+        healthy_figures = []
+        unhealthy_figures = []
 
     for i in range(len(reference_df)):  # Loop through biomarkers
 
@@ -31,7 +38,7 @@ def create_and_display_plots(reference_df,test_results_df):
         user_flag = test_results_df["Flags"][i]
 
         # Set plot colors if user biomarker result is significantly out of range (red if it is, green if not)
-        if user_flag == "L":
+        if user_flag == "L" or user_flag == "H":
             hist_color = 'rgba(0, 0, 0, 0.29)'
             curve_color = 'rgba(241, 66, 66, 0.8)'
             area_color = 'rgba(241, 66, 66, 0.8)'
@@ -84,7 +91,6 @@ def create_and_display_plots(reference_df,test_results_df):
                 )
             )
         )
-        print()
 
         # Add a specific data point on the smoothed curve
         user_data_point = float(user_data_point)
@@ -185,6 +191,18 @@ def create_and_display_plots(reference_df,test_results_df):
         fig_json = fig.to_dict()
         fig_json['config'] = config 
        
-        all_figures.append(fig_json)        
+        if bad_results_first:
+            if user_flag == "L" or user_flag == "H":
+                unhealthy_figures.append(fig_json)
+            else:
+                healthy_figures.append(fig_json)
+        else:
+            all_figures.append(fig_json)  
 
-    return(all_figures)
+
+    if bad_results_first:
+        all_figures.extend(unhealthy_figures)
+        all_figures.extend(healthy_figures)
+        return(all_figures)
+    else:
+        return(all_figures)
