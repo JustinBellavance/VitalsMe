@@ -157,24 +157,24 @@ def create_and_display_plots(reference_df,test_results_df,bad_results_first=True
         # Custom layout
         fig.update_layout(
             title=dict(
-            text=reference_df["vitals_plot_title"][i],  # Use row for title dynamically
+            text=("<b>"+reference_df["vitals_plot_title"][i]+"</b>"),  # Use row for title dynamically
             x=0.5,  # Center the title
             xanchor='center',  # Anchor the title at the center
             yanchor='top',  # Anchor it at the top
             font=dict(
-            family="Roboto, sans-serif",  # Minimalistic and clean font
+            family="Arial",  # Minimalistic and clean font
             size=24,  # Slightly larger for prominence
             color="black")), 
             xaxis_title=dict(
                 text=reference_df["Units"][i],
                 font=dict(
-                family="Roboto, sans-serif",  # Matching font for x-axis
+                family="Arial",  # Matching font for x-axis
                 size=16)),        
             bargap=0.2,  # Spacing between bars in the histogram
             plot_bgcolor='rgba(0, 0, 0, 0)', 
             paper_bgcolor='rgba(0, 0, 0, 0)', 
             xaxis=dict(showgrid=False, tickfont=dict(
-            family='Roboto, sans-serif',  # Font family for tick labels
+            family='Arial',  # Font family for tick labels
             size=15,  # Font size for tick labels
             color='black'  # Font color for tick labels
             )),  

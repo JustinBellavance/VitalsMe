@@ -207,8 +207,6 @@ def process_file():
         # Convert to JSON
         results_json = test_results_df.to_json(orient='records')
         print(results_json)
-        
-    print(f"personal info : {personal_info}")
 
     ai_response = get_ai_response()
     
