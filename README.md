@@ -11,11 +11,13 @@ We're extremely proud to have a finished, polished product for users interested 
 In order to run the code, run the frontend and backend seperatly, with node and python v3.12.* installed.
 In one terminal : 
   >`cd frontend && npm install`
+
   >`npm run dev`
 
 Then click on the localhost link in the terminal.
 
 In the other :
   >`cd backend && python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt`
+
   >`flask --app app.py run`
 
