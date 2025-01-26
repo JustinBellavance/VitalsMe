@@ -171,8 +171,8 @@ def create_and_display_plots(reference_df,test_results_df,bad_results_first=True
                 family="Arial",  # Matching font for x-axis
                 size=16)),        
             bargap=0.2,  # Spacing between bars in the histogram
-            plot_bgcolor='rgba(0, 0, 0, 0)', 
-            paper_bgcolor='rgba(0, 0, 0, 0)', 
+            plot_bgcolor='rgba(0,0,0,0)', 
+            paper_bgcolor='rgba(0,0,0,0)', 
             xaxis=dict(showgrid=False, tickfont=dict(
             family='Arial',  # Font family for tick labels
             size=15,  # Font size for tick labels
@@ -180,7 +180,7 @@ def create_and_display_plots(reference_df,test_results_df,bad_results_first=True
             )),  
             yaxis=dict(showgrid=False, showticklabels=False),
             showlegend=False,  # Remove the legend
-            shapes=shapes
+            shapes=shapes,
         )
 
         # Save plot as html locally
