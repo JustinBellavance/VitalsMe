@@ -4,6 +4,7 @@ import LoginPage from './LoginPage';
 import UploadPage from './UploadPage';
 import ResultsPage from './ResultsPage';
 import './index.css';
+import vitalsLogo from './assets/vitalsme.png';
 
 function App() {
   return (
@@ -21,7 +22,14 @@ function App() {
 function LandingPage() {
   return (
     <div className="flex flex-col items-center justify-center h-screen w-screen">
-      <h1 className="app-name">VitalsMe</h1>
+      <div className="flex items-center justify-center gap-6">
+        <img 
+          src={vitalsLogo}
+          alt="Vitals.me Logo" 
+          className="h-16 w-16 my-auto"
+        />
+        <h1 className="app-name my-auto">Vitals.me</h1>
+      </div>
       <p className="slogan">Your health, simplified.</p>
       <div className="button-container">
         <Link to="/login">
