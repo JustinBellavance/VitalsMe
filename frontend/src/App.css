@@ -145,19 +145,22 @@ html, body {
 
 .plots-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 columns, each taking up equal space */
-  grid-template-rows: repeat(3, 1fr);    /* 3 rows, each taking up equal space */
-  gap: 5px;                             /* Optional: Adds space between the grid items */
-  width: 100%;                           /* Ensures the container takes up full width */
-  height: 100vh;                         /* Makes the container take up full height of the viewport */
+  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  gap: 10px; /* Adds space between the grid items */
+  width: 100%; /* Ensures the container takes up full width */
+  height: 280vh; /* Makes the container take up full height of the viewport */
+  padding: 10px; /* Optional: Adds padding around the container */
 }
 
 .plot-item {
-  width: 100%;                           /* Ensures the Plotly chart takes up full width */
-  height: 100%;                          /* Ensures the Plotly chart takes up full height */
   display: flex;
-  justify-content: center;               /* Centers the plot inside the grid item */
-  align-items: center;                   /* Centers the plot vertically inside the grid item */
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* Ensures the Plotly chart takes up full width */
+  height: 100%; /* Ensures the Plotly chart takes up full height */
+  border-radius: 15px; /* Rounds the corners of the plot window */
+  overflow: hidden; /* Ensures the content inside the div respects the border-radius */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow for better visibility */
 }
 
 .table {
