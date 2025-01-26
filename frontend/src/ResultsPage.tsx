@@ -197,7 +197,7 @@ function ResultsPage() {
           </div>
 
           {/* Scrollable Table Container */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto ">
             <div className="rounded-md border h-[calc(100vh-250px)]">
               <div className="h-dvh">
                 <Table className="table">
@@ -265,7 +265,7 @@ function ResultsPage() {
           </div>
 
           {/* Scrollable Plots Container */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="overflow-y-auto h-[calc(100vh-200px)]">
             {!isExpanded && plotData && (
               <div className="h-full p-4">
                 <Plots allFigures={plotData} />
