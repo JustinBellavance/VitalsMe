@@ -32,6 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Maximize, Minimize, Send } from '@mynaui/icons-react';
 
 const patientData = {
   name: "Bob Laiponje",
@@ -75,6 +76,8 @@ function ResultsPage() {
   const [rowSelection, setRowSelection] = React.useState({});
   const [isExpanded, setIsExpanded] = useState(false);
   const summaryRef = useRef(null);
+  const [message, setMessage] = useState("");
+  const [chatHistory, setChatHistory] = useState([]);
 
   const fullText = "Your blood test results show normal levels across key areas. No further action is needed.";
   const previewText = fullText.substring(0, 50) + "...";
@@ -114,11 +117,33 @@ function ResultsPage() {
   const location = useLocation();
   const plotData = location.state?.plotData;
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (message.trim()) {
+      setChatHistory([...chatHistory, { text: message, sender: 'user' }]);
+      setMessage('');
+      // Add API call to chatbot here
+    }
+  };
+
+  const handleChatSubmit = (e) => {
+    e.preventDefault();
+    e.stopPropagation(); // Prevent event bubbling
+    if (message.trim()) {
+      setChatHistory([...chatHistory, { text: message, sender: 'user' }]);
+      setMessage('');
+    }
+  };
+
+  const handleChatInput = (e) => {
+    e.stopPropagation(); // Prevent event bubbling
+    setMessage(e.target.value);
+  };
+
   return (
     <div className="results-page min-h-screen w-screen overflow-y-auto">
-      {/* Main grid container with proper overflow */}
-      <div className="grid grid-cols-4 gap-4 p-4 h-screen overflow-y-auto">
-        {/* Left side content */}
+      <div className="grid grid-cols-4 gap-4 p-4 h-screen">
+        {/* Left column */}
         <div className="col-span-1">
           {/* Vitals.me text centered above table */}
           <h1 className="text-[#70b3b3] results-title app-name text-center mb-4">Vitals.me</h1>
@@ -169,32 +194,94 @@ function ResultsPage() {
           </div>
         </div>
 
-        {/* Right side content with proper overflow */}
-        <div className="col-span-3 overflow-y-auto">
-          <div 
-            ref={summaryRef}
-            onClick={() => setIsExpanded(!isExpanded)}
-            className={`
-              results-summary bg-white rounded-lg shadow-md cursor-pointer
-              transition-all duration-300 ease-in-out
-              ${isExpanded ? 
-                'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4/5 h-4/5 z-50 p-8' : 
-                'relative p-6 hover:shadow-lg'
-              }
-            `}
-          >
-            <p className="text-gray-800">
-              {isExpanded ? fullText : previewText}
-            </p>
-            <span className="text-blue-500 text-sm mt-2 block">
-              {isExpanded ? 'Show less' : 'Read more'}
-            </span>
+        {/* Right column */}
+        <div className="col-span-3">
+          {/* Base Summary Container */}
+          <div className="bg-white rounded-lg p-6 relative">
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100"
+            >
+              <div className="w-6 h-6 text-gray-600">
+                {isExpanded ? (
+                  <Minimize width={24} height={24} stroke="#4B5563" />
+                ) : (
+                  <Maximize width={24} height={24} stroke="#4B5563" />
+                )}
+              </div>
+            </button>
+
+            {!isExpanded && (
+              <p className="text-gray-800 pl-12">{previewText}</p>
+            )}
           </div>
-          {plotData && 
+
+          {/* Expanded State */}
+          {isExpanded && (
+            <>
+              <div className="fixed inset-0 bg-black/50 z-40" />
+              <div className="fixed inset-0 z-50 bg-white p-8 overflow-y-auto">
+                <div className="max-w-6xl mx-auto h-full flex flex-col">
+                  <button
+                    onClick={() => setIsExpanded(false)}
+                    className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100"
+                  >
+                    <div className="w-6 h-6 text-gray-600">
+                      <Minimize width={24} height={24} stroke="#4B5563" />
+                    </div>
+                  </button>
+                  <h2 className="text-2xl font-bold mb-6 mt-12 pl-12">Results Summary</h2>
+                  <p className="text-gray-800 mb-8">{fullText}</p>
+
+                  {/* Chat History */}
+                  <div className="flex-grow overflow-y-auto mb-4 px-4">
+                    {chatHistory.map((chat, index) => (
+                      <div key={index} className={`flex ${chat.sender === 'user' ? 'justify-end' : 'justify-start'} mb-2`}>
+                        <div className={`max-w-[70%] p-3 rounded-lg ${
+                          chat.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100'
+                        }`}>
+                          {chat.message}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Chat Input */}
+                  <div className="sticky bottom-0 left-0 right-0 bg-white p-4 border-t">
+                    <form onSubmit={(e) => {
+                      e.preventDefault();
+                      if (message.trim()) {
+                        setChatHistory([...chatHistory, { message, sender: 'user' }]);
+                        setMessage('');
+                      }
+                    }} 
+                    className="flex gap-2">
+                      <input
+                        type="text"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Ask about your results..."
+                        className="flex-grow p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <button
+                        type="submit"
+                        className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                      >
+                        <Send width={20} height={20} />
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Plots */}
+          {plotData && (
             <div className="w-full mt-4">
               <Plots allFigures={plotData} />
             </div>
-          }
+          )}
         </div>
       </div>
     </div>
