@@ -2,6 +2,7 @@ import Plot from 'react-plotly.js';
 import Plots from './Plots.tsx'
 import { useLocation } from 'react-router-dom';
 import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Link } from 'react-router-dom';
 import './index.css';
 import {
@@ -128,12 +129,29 @@ function ResultsPage() {
     var user_results = all_data['user_results'];
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (message.trim()) {
       setChatHistory([...chatHistory, { text: message, sender: 'user' }]);
       setMessage('');
       // Add API call to chatbot here
+
+      try {
+        const response = await fetch('http://localhost:5000/chat', {
+          method: 'POST',
+          body: message,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("CHAT RESULTS ", data)
+        } else {
+          alert('Failed to process the file.');
+        }
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        alert('An error occurred. Please try again.');
+      }
     }
   };
 
@@ -152,7 +170,7 @@ function ResultsPage() {
   };
 
   return (
-    <div className="results-page min-h-screen w-screen overflow-hidden">
+    <div className="results-page min-h-screen w-screen overflow-auto">
       <div className="grid grid-cols-4 gap-4 p-4 h-screen">
         {/* Left column */}
         <div className="col-span-1">
@@ -194,7 +212,6 @@ function ResultsPage() {
                 </TableHeader>
                 <TableBody>
                   {user_results.slice(1).map((result, index) => {
-                    console.log(result); // Print each result object to the console
                     return (
                       <TableRow key={index}>
                         <TableCell>{result[0]}</TableCell>
@@ -226,7 +243,13 @@ function ResultsPage() {
             </button>
 
             {!isExpanded && (
-              <p className="text-gray-800 pl-12">{ai_response}</p>
+              <p className="text-gray-800 pl-12">
+                <ReactMarkdown>
+
+                {ai_response}
+                </ReactMarkdown>
+
+                </p>
             )}
           </div>
 
@@ -252,16 +275,22 @@ function ResultsPage() {
                     </div>
                   </button>
                   <h2 className="text-2xl font-bold mb-6 mt-12 pl-12">Results Summary</h2>
-                  <p className="text-gray-800 mb-8">{ai_response}</p>
+                  <p className="text-gray-800 mb-8">                
+                    <ReactMarkdown>
+                      {ai_response}
+                    </ReactMarkdown>
+                  </p>
 
                   {/* Chat History */}
                   <div className="flex-grow overflow-y-scroll mb-4 px-4">
                     {chatHistory.map((chat, index) => (
                       <div key={index} className={`flex ${chat.sender === 'user' ? 'justify-end' : 'justify-start'} mb-2`}>
                         <div className={`max-w-[70%] p-3 rounded-lg ${
-                          chat.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100'
+                          chat.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-600'
                         }`}>
-                          {chat.message}
+                          <ReactMarkdown>
+                            {chat.message}
+                          </ReactMarkdown>
                         </div>
                       </div>
                     ))}
@@ -269,11 +298,35 @@ function ResultsPage() {
 
                   {/* Chat Input */}
                   <div className="sticky bottom-0 left-0 right-0 bg-white p-4 border-t">
-                    <form onSubmit={(e) => {
+                    <form onSubmit={async (e) => {
                       e.preventDefault();
                       if (message.trim()) {
                         setChatHistory([...chatHistory, { message, sender: 'user' }]);
                         setMessage('');
+
+                        try {
+                          const response = await fetch('http://localhost:5000/chat', {
+                            method: 'POST',
+                            body: message,
+                          });
+                  
+                          if (response.ok) {
+                            const data = await response.json();
+                            console.log("CHAT RESULTS ", data)
+
+                            // Add the chatbot's response to chat history
+                            setChatHistory(prevChatHistory => [
+                              ...prevChatHistory,
+                              { message: data, sender: 'assistant' }
+                            ]);
+                            
+                          } else {
+                            alert('Failed to process the file.');
+                          }
+                        } catch (error) {
+                          console.error('Error uploading file:', error);
+                          alert('An error occurred. Please try again.');
+                        }
                       }
                     }} 
                     className="flex gap-2">
