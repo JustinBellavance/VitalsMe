@@ -1,5 +1,6 @@
 backend/uploads
 .venv
+.env
 __pycache__
 backend/plots
 .env

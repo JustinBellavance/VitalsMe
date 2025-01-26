@@ -1,39 +1,184 @@
+import Plot from 'react-plotly.js';
+
+import Plots from './Plots.tsx'
+
+import { useLocation } from 'react-router-dom';
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './index.css';
+import {
+  SortingState,
+  ColumnFiltersState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { ChevronDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+const patientData = {
+  name: "Bob Laiponje",
+  age: 25,
+  sex: "Male",
+};
+
+const testResults = [
+  { vitals: "Hemoglobin (Hb) (Male)", results: "110 g/L (Ref: 125–170 g/L, Low)" },
+  { vitals: "White blood cell (WBC) count", results: "6.2 x10⁹/L (Ref: 3.5–10.5, Normal)" },
+  { vitals: "Fasting serum glucose", results: "5.4 mmol/L (Ref: 4.0–6.0, Normal)" },
+  { vitals: "Cholesterol, total, serum", results: "4.8 mmol/L (Ref: <5.2, Normal)" },
+  { vitals: "LDL Cholesterol", results: "2.9 mmol/L (Ref: <3.37, Normal)" },
+  { vitals: "HDL Cholesterol", results: "1.2 mmol/L (Ref: >0.9, Normal)" },
+  { vitals: "Creatinine (Male)", results: "85 µmol/L (Ref: 62–106, Normal)" },
+  { vitals: "Alanine aminotransferase (ALT)", results: "30 U/L (Ref: 17–63, Normal)" },
+];
+
+const data = testResults;
+
+const columns = [
+  {
+    accessorKey: "vitals",
+    header: "Vitals",
+    cell: (info: any) => info.getValue(),
+  },
+  {
+    accessorKey: "results",
+    header: "Results",
+    cell: (info: any) => info.getValue(),
+  },
+];
 
 function ResultsPage() {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+
+  const table = useReactTable({
+    data,
+    columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  });
+
+  const location = useLocation();
+  var all_data = location.state?.plotData;
+  var plotData = undefined;
+  var ai_response = undefined;
+  var personal_info = undefined;
+  
+  if (all_data !== undefined){
+    var plotData = all_data['all_figures'];
+    var ai_response = all_data['ai_response'];
+    var personal_info = all_data['personal_info'];
+  }
+
+
   return (
-    <div className="results-page flex flex-col items-center justify-center h-screen w-screen">
-      <h1 className="results-title">Vitals.me</h1>
-      <p className="results-summary">
-        Your blood test results show normal levels across key areas. Red blood cells are within the
-        healthy range at 4.5-5.9 million cells/mcL, indicating no anemia. White blood cells are normal
-        at 4,000–11,000 cells/mcL, suggesting no infection. Platelets are optimal at 150,000–450,000/mcL,
-        ruling out clotting issues. Blood glucose is 70–99 mg/dL, showing no diabetes. Kidney function
-        markers like creatinine (0.6–1.2 mg/dL) and BUN (7–20 mg/dL) are normal. Liver enzymes ALT
-        (7–95 U/L) and AST (10–40 U/L) are within range. Cholesterol levels are healthy: LDL &lt;100 mg/dL,
-        HDL &gt;40 mg/dL, and triglycerides &lt;150 mg/dL. Thyroid-stimulating hormone (TSH) is 0.4–4.0 mIU/L,
-        indicating balanced thyroid function. Overall, your results are normal, and no further action is needed.
-      </p>
-      <div className="results-metrics">
-        <div className="metric">
-          <span className="metric-label">RBC</span>
-          <span className="metric-value">4.8 million cells/mcL</span>
+    <div className="results-page h-screen w-screen overflow-y-auto">
+      {/* Main grid container */}
+      <div className="grid grid-cols-4 grid-rows-4 gap-4 h-full w-full p-4">
+        {/* Header spanning full width */}
+        <div className="col-span-4 flex justify-center items-center">
+          <h1 className="results-title app-name text-center ">Vitals.me</h1>
         </div>
-        <div className="metric">
-          <span className="metric-label">WBC</span>
-          <span className="metric-value">6,000 cells/mcL</span>
+
+        <div className="col-span-1 row-span-2 sticky top-0 h-screen overflow-hidden">
+          {/* Patient info above table */}
+          <div className="mb-2">
+            <div className="header text-left">
+              <p className="text-3xl font-bold text-black">Hello, {patientData.name}</p>
+              <p className="text-sm text-gray-800">
+                Age: {patientData.age} | Sex: {patientData.sex}
+              </p>
+            </div>
+          </div>
+
+          {/* Table with fixed height and scroll */}
+          <div className="rounded-md border h-dvh">
+            <div className="h-dvh">
+              <Table className="table">
+                <TableHeader className="sticky top-0 bg-gray-50 z-10">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <TableHead 
+                          key={header.id}
+                          className="bg-gray-50 text-gray-700 font-semibold"
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+                <TableBody>
+                  {testResults.map((result, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{result.vitals}</TableCell>
+                      <TableCell>{result.results}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
         </div>
-        <div className="metric">
-          <span className="metric-label">HDL</span>
-          <span className="metric-value">55 mg/dL</span>
+
+        {/* Results summary spanning 2 columns */}
+        <div className="col-span-3 row-span-3">
+          {ai_response && <p className="results-summary">
+            {ai_response}
+          </p> }
+          {plotData && 
+          <div style={{ width: '100%', margin: '0', overflow: 'hidden' }}>
+            <Plots allFigures={plotData} />
+          </div>}
+          {/* <Link to="/">
+          <button className="button-secondary">Back to Home</button>
+          </Link> */}
         </div>
-        {/* Add more metrics as needed */}
       </div>
-      <Link to="/">
-        <button className="button-secondary">Back to Home</button>
-      </Link>
     </div>
   );
 }
