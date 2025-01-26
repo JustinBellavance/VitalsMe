@@ -21,7 +21,6 @@ def create_and_display_plots(reference_df,test_results_df):
     for i in range(len(reference_df)):  # Loop through biomarkers
 
         # Get reference values and ranges
-        file_name = reference_df["vitals_short_name"][i]  # File name for the plot
         mean = reference_df["Mean"][i] 
         reference_range = reference_df["Reference values"][i]
         variance = reference_df["Variance"][i]
@@ -50,8 +49,10 @@ def create_and_display_plots(reference_df,test_results_df):
             limit = re.findall(r'[<>](\S+)', reference_range) # Regex to capture what comes after < or >
         else:
             limit_type = "range"
-            limit = reference_range.split("-")
-
+            if re.search(r'–', reference_range):
+                limit = reference_range.split("–")
+            else:
+                limit = reference_range.split("-")
 
         # Generate 1000 data points
         data = np.random.normal(mean, std_dev, 1000)  
