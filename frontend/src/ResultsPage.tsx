@@ -1,7 +1,7 @@
 import Plot from 'react-plotly.js';
 import Plots from './Plots.tsx'
 import { useLocation } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './index.css';
 import {
@@ -74,8 +74,23 @@ function ResultsPage() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [isExpanded, setIsExpanded] = useState(false);
+  const summaryRef = useRef(null);
+
   const fullText = "Your blood test results show normal levels across key areas. No further action is needed.";
   const previewText = fullText.substring(0, 50) + "...";
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (summaryRef.current && !summaryRef.current.contains(event.target)) {
+        setIsExpanded(false);
+      }
+    };
+
+    if (isExpanded) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isExpanded]);
 
   const table = useReactTable({
     data,
@@ -100,27 +115,26 @@ function ResultsPage() {
   const plotData = location.state?.plotData;
 
   return (
-    <div className="results-page h-screen w-screen overflow-y-auto">
-      {/* Main grid container */}
-      <div className="grid grid-cols-4 grid-rows-4 gap-4 h-full w-full p-4">
-        {/* Header spanning full width */}
-        <div className="col-span-4 flex justify-center items-center">
-          <h1 className="results-title app-name text-center ">Vitals.me</h1>
-        </div>
-
-        <div className="col-span-1 row-span-2 sticky top-0 h-screen overflow-hidden">
-          {/* Patient info above table */}
+    <div className="results-page min-h-screen w-screen overflow-y-auto">
+      {/* Main grid container with proper overflow */}
+      <div className="grid grid-cols-4 gap-4 p-4 h-screen overflow-y-auto">
+        {/* Left side content */}
+        <div className="col-span-1">
+          {/* Vitals.me text centered above table */}
+          <h1 className="text-[#70b3b3] results-title app-name text-center mb-4">Vitals.me</h1>
+          
+          {/* Patient info and table */}
           <div className="mb-2">
             <div className="header text-left">
               <p className="text-3xl font-bold text-black">Hello, {patientData.name}</p>
               <p className="text-sm text-gray-800">
-                Age: {patientData.age} | Sex: {patientData.sex}
+                {patientData.age}{patientData.sex.charAt(0).toUpperCase()}
               </p>
             </div>
           </div>
 
-          {/* Table with fixed height and scroll */}
-          <div className="rounded-md border h-dvh">
+          {/* Table container */}
+          <div className="rounded-md border h-[calc(100vh-250px)]">
             <div className="h-dvh">
               <Table className="table">
                 <TableHeader className="sticky top-0 bg-gray-50 z-10">
@@ -155,11 +169,19 @@ function ResultsPage() {
           </div>
         </div>
 
-        {/* Results summary spanning 2 columns */}
-        <div className="col-span-3 row-span-3">
+        {/* Right side content with proper overflow */}
+        <div className="col-span-3 overflow-y-auto">
           <div 
+            ref={summaryRef}
             onClick={() => setIsExpanded(!isExpanded)}
-            className="results-summary bg-white p-6 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-all duration-300"
+            className={`
+              results-summary bg-white rounded-lg shadow-md cursor-pointer
+              transition-all duration-300 ease-in-out
+              ${isExpanded ? 
+                'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4/5 h-4/5 z-50 p-8' : 
+                'relative p-6 hover:shadow-lg'
+              }
+            `}
           >
             <p className="text-gray-800">
               {isExpanded ? fullText : previewText}
@@ -168,9 +190,8 @@ function ResultsPage() {
               {isExpanded ? 'Show less' : 'Read more'}
             </span>
           </div>
-
           {plotData && 
-            <div style={{ width: '100%', margin: '0', overflow: 'hidden' }}>
+            <div className="w-full mt-4">
               <Plots allFigures={plotData} />
             </div>
           }
