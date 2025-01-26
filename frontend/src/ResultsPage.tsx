@@ -166,6 +166,9 @@ function ResultsPage() {
               <p className="text-sm text-gray-800">
                 {personal_info[1][1]}{personal_info[2][1].charAt(0).toUpperCase()}
               </p>
+              <p className="text-sm text-gray-800">
+              Test performed on the {personal_info[3][1]}
+              </p>
             </div>
           </div>
 
