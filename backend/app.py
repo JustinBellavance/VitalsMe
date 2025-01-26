@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, request, render_template
-
 import pdfplumber
 import pandas as pd
 import os
@@ -7,7 +6,6 @@ import plotly.io as pio
 import plotly.graph_objects as go
 import scipy.stats as stats
 import numpy as np
-
 from openai import OpenAI
 from dotenv import load_dotenv
 
@@ -32,110 +30,82 @@ os.makedirs(app.config['PLOTLY_OUTPUT_FOLDER'], exist_ok=True)
 
 # Load the reference dataframe
 reference_df = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], "reference_data.csv"))
+global reference_df_text
+reference_df_text = reference_df.to_string(index=False)
 
-@app.route("/")
-def test_html():
-    return render_template("test.html")
+@app.route('/test_ai', methods=['GET', 'POST'])
+def test_ai():
+    if request.method == 'POST':
+        # Check for file upload
+        if 'pdfFile' not in request.files:
+            return jsonify({'error': 'No file uploaded'}), 400
 
-# Allows to upload the pdf, transform the tables into pd.dataframes, and save these as csv files
-@app.route('/process', methods=['POST'])
-def process_file():
-    if 'pdfFile' not in request.files:
-        return jsonify({'error': 'No file uploaded'}), 400
-
-    file = request.files['pdfFile']
-    
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-
-    with pdfplumber.open(file_path) as pdf:
-
-        p0 = pdf.pages[0]
-        tables = p0.extract_tables()
-
-        personal_info = tables[0]
-        test_results = tables[1]
-
-        personal_info_df = pd.DataFrame(personal_info[1:], columns=personal_info[0])
-        test_results_df = pd.DataFrame(test_results[1:], columns=test_results[0])
+        file = request.files['pdfFile']
         
-    all_figures = []
-    for i in range(len(reference_df)):  # Loop through rows using iterrows()
-        file_name = reference_df["vitals_short_name"][i]  # File name for the plot
-        mean = reference_df["Mean"][i]
-        variance = reference_df["Variance"][i]
-        std_dev = np.sqrt(variance)
-        user_data_point = test_results_df["Results"][i]
-        
-        # Generate 1000 data points
-        data = np.random.normal(mean, std_dev, 1000)  
+        # Save uploaded PDF file
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        file.save(file_path)
 
-        # Create the histogram
-        hist_data = go.Histogram(
-            x=data,
-            nbinsx=30,  # Number of bins in the histogram
-            histnorm='probability density',  # Normalize to show density
-            opacity=0.7,
-            marker=dict(color='rgba(0, 100, 255, 0.5)'),
-        )
+        # Extract data from the PDF
+        try:
+            with pdfplumber.open(file_path) as pdf:
+                p0 = pdf.pages[0]
+                tables = p0.extract_tables()
 
-        # Create smoothed normal distribution curve
-        x_vals = np.linspace(mean - 4*std_dev, mean + 4*std_dev, 1000)
-        y_vals = stats.norm.pdf(x_vals, mean, std_dev)
+                # Assume the first two tables are personal info and test results
+                personal_info = tables[0]
+                test_results = tables[1]
 
-        smoothed_curve = go.Scatter(
-            x=x_vals,
-            y=y_vals,
-            mode='lines',
-            fill='tozeroy',  # Fill area under the plot with blue color
-            fillcolor='rgba(0, 0, 255, 0.3)',  # Blue with some transparency,
-            name=None,
-            #line=dict(color='red', width=2)
-        )
+                # Convert tables to DataFrames
+                personal_info_df = pd.DataFrame(personal_info[1:], columns=personal_info[0])
+                test_results_df = pd.DataFrame(test_results[1:], columns=test_results[0])
 
-        # Add a specific data point on the smoothed curve
-        
-        user_data_point = float(user_data_point)
-        user_y_val = stats.norm.pdf(float(user_data_point), mean, std_dev)
-        data_point = go.Scatter(
-            x=[user_data_point],
-            y=[user_y_val],
-            mode='markers',
-            marker=dict(size=10, color='green', symbol='circle'),
-            name='Data point'
-        )
+                # Convert DataFrames to text for context
+                personal_info_text = personal_info_df.to_string(index=False)
+                test_results_text = test_results_df.to_string(index=False)
+        except Exception as e:
+            return jsonify({'error': f"Error processing PDF: {str(e)}"}), 500
 
-        # Combine histogram, smoothed curve, and data point
-        fig = go.Figure(data=[
-            hist_data,
-            smoothed_curve,
-            data_point
-            ])
+        # Get user prompt
+        user_prompt = request.form['prompt']
 
-        # Custom layout
-        fig.update_layout(
-            title=None,  # Use row for title dynamically
-            xaxis_title=reference_df["Vitals"][i],
-            yaxis_title="Density",
-            bargap=0.2,  # Spacing between bars in the histogram
-            plot_bgcolor='rgba(0, 0, 0, 0)', 
-            paper_bgcolor='rgba(0, 0, 0, 0)', 
-            xaxis=dict(showgrid=False),  
-            yaxis=dict(showgrid=False, showticklabels=False),
-            showlegend=False  # Remove the legend
-        )
+        try:
+            # Prepare system message with extracted data
+            system_message = (
+                "You are a highly experienced and empathetic medical doctor. "
+                "You analyze patient test results and provide medical advice in a compassionate manner. "
+                "Here's the patient's personal information:\n"
+                f"{personal_info_text}\n\n"
+                "Here are the patient's test results:\n"
+                f"{test_results_text}\n\n"
+                "Please respond to the user's query with this context in mind."
+            )
 
-        # Save plot as html locally
-        # fig.write_html(os.path.join(app.config['PLOTLY_OUTPUT_FOLDER'], "".join([file_name, ".hmtl"])))
+            # Construct messages for OpenAI API
+            messages = [
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": user_prompt}
+            ]
 
-        config = {'displayModeBar': False}
+            # Call OpenAI API
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=messages,
+                max_tokens=500,
+                temperature=0.7
+            )
 
-        plot_html = fig.to_html(full_html=False, config=config)
-        
-        all_figures.append(plot_html)
-        
-    # TODO : send everything instead of just the last one
-    return jsonify({'plot': all_figures[-1]})
+            # Extract AI response
+            ai_response = response.choices[0].message.content
+            return jsonify({'ai_response': ai_response})
 
+        except Exception as e:
+            return jsonify({'error': f"Error generating AI response: {str(e)}"}), 500
+
+    return render_template('test_ai.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 # @app.route('/upload', methods=['POST'])
 # def upload_pdf():
