@@ -1,9 +1,7 @@
-# Vitals.me
-### 1. Introduction                                        
+                        
+![Logo](frontend/src/assets/logo_website_3.png)
 
- ![Logo](frontend/assest/Logo.png)
-
-
+### 1. Introduction   
 Inspired by bad personal experiences with long blood testing interpretation times and a serious lack of transparency into our own health, we built an extremely easy-to-use website which allows users to upload their own blood testing results and understand them **on their own time**. With stunning visuals and a friendly, safe and private chat function, users can ask any questions, anytime.
 
 We built Vitals.me using a React-Flask software stack, which an customized OpenAI model as the chat bot.
