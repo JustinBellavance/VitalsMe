@@ -5,8 +5,7 @@
   font-style: italic;
 }
 
-/* Import Tailwind CSS */
-@import "tailwindcss";
+
 
 html, body {
   margin: 0;
