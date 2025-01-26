@@ -1,10 +1,7 @@
 import Plot from 'react-plotly.js';
-
 import Plots from './Plots.tsx'
-
 import { useLocation } from 'react-router-dom';
-
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './index.css';
 import {
@@ -35,6 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Maximize, Minimize, Send } from '@mynaui/icons-react';
 
 const patientData = {
   name: "Bob Laiponje",
@@ -76,6 +74,26 @@ function ResultsPage() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [isExpanded, setIsExpanded] = useState(false);
+  const summaryRef = useRef(null);
+  const [message, setMessage] = useState("");
+  const [chatHistory, setChatHistory] = useState([]);
+
+  const fullText = "Your blood test results show normal levels across key areas. No further action is needed.";
+  const previewText = fullText.substring(0, 50) + "...";
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (summaryRef.current && !summaryRef.current.contains(event.target)) {
+        setIsExpanded(false);
+      }
+    };
+
+    if (isExpanded) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isExpanded]);
 
   const table = useReactTable({
     data,
@@ -110,28 +128,49 @@ function ResultsPage() {
     var user_results = all_data['user_results'];
   }
 
-  return (
-    <div className="results-page h-screen w-screen overflow-y-auto">
-      {/* Main grid container */}
-      <div className="grid grid-cols-4 grid-rows-4 gap-4 h-full w-full p-4">
-        {/* Header spanning full width */}
-        <div className="col-span-4 flex justify-center items-center">
-          <h1 className="results-title app-name text-center ">Vitals.me</h1>
-        </div>
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (message.trim()) {
+      setChatHistory([...chatHistory, { text: message, sender: 'user' }]);
+      setMessage('');
+      // Add API call to chatbot here
+    }
+  };
 
-        <div className="col-span-1 row-span-2 sticky top-0 h-screen overflow-hidden">
-          {/* Patient info above table */}
+  const handleChatSubmit = (e) => {
+    e.preventDefault();
+    e.stopPropagation(); // Prevent event bubbling
+    if (message.trim()) {
+      setChatHistory([...chatHistory, { text: message, sender: 'user' }]);
+      setMessage('');
+    }
+  };
+
+  const handleChatInput = (e) => {
+    e.stopPropagation(); // Prevent event bubbling
+    setMessage(e.target.value);
+  };
+
+  return (
+    <div className="results-page min-h-screen w-screen overflow-hidden">
+      <div className="grid grid-cols-4 gap-4 p-4 h-screen">
+        {/* Left column */}
+        <div className="col-span-1">
+          {/* Vitals.me text centered above table */}
+          <h1 className="text-[#70b3b3] results-title app-name text-center mb-4">Vitals.me</h1>
+          
+          {/* Patient info and table */}
           <div className="mb-2">
             <div className="header text-left">
               <p className="text-3xl font-bold text-black">Hello, {personal_info[0][1]}</p>
               <p className="text-sm text-gray-800">
-                Age: {personal_info[1][1]} | Sex: {personal_info[2][1]}
+                {personal_info[1][1]}{personal_info[2][1].charAt(0).toUpperCase()}
               </p>
             </div>
           </div>
 
-          {/* Table with fixed height and scroll */}
-          <div className="rounded-md border h-dvh">
+          {/* Table container */}
+          <div className="rounded-md border h-[calc(100vh-250px)]">
             <div className="h-dvh">
               <Table className="table">
                 <TableHeader className="sticky top-0 bg-gray-50 z-10">
@@ -169,19 +208,94 @@ function ResultsPage() {
           </div>
         </div>
 
-        {/* Results summary spanning 2 columns */}
-        <div className="col-span-3 row-span-3">
-          {ai_response && <p className="results-summary">
-            {ai_response}
-          </p> }
-          {plotData && 
-            <div style={{ width: '100%', margin: '0', overflow: 'hidden' }}>
+        {/* Right column */}
+        <div className="col-span-3 flex flex-col h-full">
+          {/* Base Summary Container */}
+          <div className="bg-white rounded-lg p-6 relative mb-4">
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100"
+            >
+              <div className="w-6 h-6 text-gray-600">
+                {isExpanded ? (
+                  <Minimize width={24} height={24} stroke="#4B5563" />
+                ) : (
+                  <Maximize width={24} height={24} stroke="#4B5563" />
+                )}
+              </div>
+            </button>
+
+            {!isExpanded && (
+              <p className="text-gray-800 pl-12">{ai_response}</p>
+            )}
+          </div>
+
+          {/* Scrollable Plots Container */}
+          {!isExpanded && plotData && (
+            <div className="flex-1 overflow-y-auto p-4">
               <Plots allFigures={plotData} />
             </div>
-          }
-          {/* <Link to="/">
-          <button className="button-secondary">Back to Home</button>
-          </Link> */}
+          )}
+
+          {/* Expanded State */}
+          {isExpanded && (
+            <>
+              <div className="fixed inset-0 bg-black/50 z-40" />
+              <div className="fixed inset-0 z-50 bg-white p-8 overflow-y-auto">
+                <div className="max-w-6xl mx-auto h-full flex flex-col">
+                  <button
+                    onClick={() => setIsExpanded(false)}
+                    className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100"
+                  >
+                    <div className="w-6 h-6 text-gray-600">
+                      <Minimize width={24} height={24} stroke="#4B5563" />
+                    </div>
+                  </button>
+                  <h2 className="text-2xl font-bold mb-6 mt-12 pl-12">Results Summary</h2>
+                  <p className="text-gray-800 mb-8">{ai_response}</p>
+
+                  {/* Chat History */}
+                  <div className="flex-grow overflow-y-scroll mb-4 px-4">
+                    {chatHistory.map((chat, index) => (
+                      <div key={index} className={`flex ${chat.sender === 'user' ? 'justify-end' : 'justify-start'} mb-2`}>
+                        <div className={`max-w-[70%] p-3 rounded-lg ${
+                          chat.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100'
+                        }`}>
+                          {chat.message}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Chat Input */}
+                  <div className="sticky bottom-0 left-0 right-0 bg-white p-4 border-t">
+                    <form onSubmit={(e) => {
+                      e.preventDefault();
+                      if (message.trim()) {
+                        setChatHistory([...chatHistory, { message, sender: 'user' }]);
+                        setMessage('');
+                      }
+                    }} 
+                    className="flex gap-2">
+                      <input
+                        type="text"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Ask about your results..."
+                        className="flex-grow p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <button
+                        type="submit"
+                        className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                      >
+                        <Send width={20} height={20} />
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -1,3 +1,5 @@
+
+
 from flask import Flask, jsonify, request, render_template
 import numpy as np
 import plotly.graph_objects as go
@@ -204,7 +206,3 @@ def create_and_display_plots(reference_df,test_results_df,bad_results_first=True
         return(all_figures)
     else:
         return(all_figures)
-        
-   
-
-
