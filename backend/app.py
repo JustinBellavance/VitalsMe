@@ -8,15 +8,23 @@ import plotly.graph_objects as go
 import scipy.stats as stats
 import numpy as np
 
+from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+client = OpenAI(
+  api_key=os.getenv('OPENAI_API_KEY'),  
+)
+
 from utils import create_distribution
 
 app = Flask(__name__)
 
 # Set the folder where the files will be uploaded
-app.config['UPLOAD_FOLDER'] = './uploads'
+app.config['UPLOAD_FOLDER'] = './backend/uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 # Set the folder where the extracted data will be saved
-app.config['EXTRACTED_DATA_FOLDER'] = './uploads/temporary_csv'
+app.config['EXTRACTED_DATA_FOLDER'] = './backend/uploads/temporary_csv'
 os.makedirs(app.config['EXTRACTED_DATA_FOLDER'], exist_ok=True)
 # Set the folder where the plots will be saved
 app.config['PLOTLY_OUTPUT_FOLDER'] = './plots'
