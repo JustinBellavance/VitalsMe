@@ -1,10 +1,7 @@
 import Plot from 'react-plotly.js';
-
 import Plots from './Plots.tsx'
-
 import { useLocation } from 'react-router-dom';
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './index.css';
 import {
@@ -76,6 +73,9 @@ function ResultsPage() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [isExpanded, setIsExpanded] = useState(false);
+  const fullText = "Your blood test results show normal levels across key areas. No further action is needed.";
+  const previewText = fullText.substring(0, 50) + "...";
 
   const table = useReactTable({
     data,
@@ -157,16 +157,23 @@ function ResultsPage() {
 
         {/* Results summary spanning 2 columns */}
         <div className="col-span-3 row-span-3">
-          <p className="results-summary">
-            Your blood test results show normal levels across key areas. No further action is needed.
-          </p>
+          <div 
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="results-summary bg-white p-6 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-all duration-300"
+          >
+            <p className="text-gray-800">
+              {isExpanded ? fullText : previewText}
+            </p>
+            <span className="text-blue-500 text-sm mt-2 block">
+              {isExpanded ? 'Show less' : 'Read more'}
+            </span>
+          </div>
+
           {plotData && 
-          <div style={{ width: '100%', margin: '0', overflow: 'hidden' }}>
-            <Plots allFigures={plotData} />
-          </div>}
-          {/* <Link to="/">
-          <button className="button-secondary">Back to Home</button>
-          </Link> */}
+            <div style={{ width: '100%', margin: '0', overflow: 'hidden' }}>
+              <Plots allFigures={plotData} />
+            </div>
+          }
         </div>
       </div>
     </div>

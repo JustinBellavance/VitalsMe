@@ -22,29 +22,34 @@ function App() {
 function LandingPage() {
   return (
     <div className="flex flex-col items-center justify-center h-screen w-screen">
-      <div className="flex items-center justify-center gap-12">
+      <div className="flex flex-col items-center gap-10 pb-10">
+        {/* Logo */}
         <img 
           src={vitalsLogo}
           alt="Vitals.me Logo" 
-          className="h-32 w-32"
+          className="h-32 w-32" 
         />
-        <h1 className="app-name my-16 -mx-12 font-black text-8xl">Vitals.me</h1>
-      </div>
-      <p className="slogan text-3xl mt-8" style={{ color: '#3d98a3' }}>
-        Your <span style={{ color: '#c80b16' }} className="font-bold">health</span>, simplified.
-      </p>
-      <div className="flex flex-col items-center gap-8 mt-8">
-        <div className="flex justify-center gap-8">
-          <Link to="/login">
-            <button className="button text-2xl px-8 py-4">Login</button>
-          </Link>
+
+        {/* Slogan */}
+        <p className="slogan text-5xl" style={{ color: '#3d98a3' }}>
+          Your <span style={{ color: '#c80b16' }} className="font-bold">health</span>, simplified.
+        </p>
+        
+        {/* Name */}
+        <h1 className="app-name font-black text-8xl pb-5">Vitals.me</h1>
+
+        {/* Buttons Stack */}
+        <div className="flex flex-col items-center gap-6">
           <Link to="/upload">
-            <button className="button text-2xl px-8 py-4">Upload Results</button>
+            <button className="button text-2xl px-8 py-10">Upload Results</button>
+          </Link>
+          <Link to="/login">
+            <button className="button text-2xl px-8 py-20">Login</button>
+          </Link>
+          <Link to="/results">
+            <button className="button text-2xl px-8 py-10">View Results</button>
           </Link>
         </div>
-        <Link to="/results">
-          <button className="button text-2xl px-8 py-4">View Results</button>
-        </Link>
       </div>
     </div>
   );

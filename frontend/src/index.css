@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Sublima-ExtraBold';
+  src: url('./fonts/sublima/Sublima-ExtraBold.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Sublima-ExtraBoldItalic';
+  src: url('./fonts/sublima/Sublima-ExtraBoldItalic.otf') format('opentype');
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -34,7 +44,54 @@ body {
   @apply px-4 py-2 font-semibold text-white bg-black rounded-lg shadow-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75;
 }
 
-
 .button-secondary {
   @apply px-4 py-2 font-semibold text-white bg-gray-500 rounded-lg shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75;
+}
+
+.app-name {
+  font-family: 'Sublima-ExtraBold', sans-serif;
+}
+
+.slogan {
+  font-family: 'Sublima-ExtraBoldItalic', sans-serif;
+}
+
+.results-summary {
+  position: relative;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.results-summary:hover {
+  transform: translateY(-2px);
+}
+
+.results-summary.expanded {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 600px;
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 999;
+}
+
+.overlay.active {
+  display: block;
 }
