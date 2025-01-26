@@ -100,18 +100,22 @@ def create_and_display_plots(reference_df,test_results_df,bad_results_first=True
             y=[user_y_val],  # The y-coordinate is the corresponding probability density value
             mode='markers+text',  # Use markers and display text alongside
             marker=dict(
-                size=15,  # Marker size
+                size=13,  # Marker size
                 color='gold',  # Marker color for visibility
-                symbol='circle'  # Use a circle to represent the marker
-            ),
-            text='Your test result',  # Text to display next to the marker
-            textposition='top center',  # Position the text above the marker
-            textfont=dict(
-                family='Arial, sans-serif',  # Font family (can choose any web-safe font)
-                size=14,  # Font size
-                color='black'  # Font color
-            ),
-            name='Your test result'  # Label for the legend
+                symbol='star',  # Use a circle to represent the marker
+                line=dict(
+                    color='black',  # Contour color
+                    width=2  # Contour width
+                )
+            ) #,
+            # text='Your test result',  # Text to display next to the marker
+            # textposition='top center',  # Position the text above the marker
+            # textfont=dict(
+            #     family='Arial, sans-serif',  # Font family (can choose any web-safe font)
+            #     size=14,  # Font size
+            #     color='black'  # Font color
+            # ),
+            # name='Your test result'  # Label for the legend
         )
 
         # Combine histogram, smoothed curve, and data point
