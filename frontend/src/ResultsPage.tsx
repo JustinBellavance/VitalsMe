@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import Plot from 'react-plotly.js';
 
 import Plots from './Plots.tsx'
@@ -8,11 +7,6 @@ import { useLocation } from 'react-router-dom';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './index.css';
-=======
-import React from "react";
-import { Link } from "react-router-dom";
-import "./index.css";
->>>>>>> 3af16a49b0395987e1eb2f787d53c0152c5c261d
 import {
   SortingState,
   ColumnFiltersState,
@@ -106,20 +100,20 @@ function ResultsPage() {
   const plotData = location.state?.plotData;
 
   return (
-    <div className="results-page h-screen w-screen overflow-hidden">
+    <div className="results-page h-screen w-screen overflow-y-auto">
       {/* Main grid container */}
       <div className="grid grid-cols-4 grid-rows-4 gap-4 h-full w-full p-4">
         {/* Header spanning full width */}
         <div className="col-span-4 flex justify-center items-center">
-          <h1 className="results-title app-name text-center">Vitals.me</h1>
+          <h1 className="results-title app-name text-center ">Vitals.me</h1>
         </div>
 
-        <div className="col-span-1 row-span-2">
+        <div className="col-span-1 row-span-2 sticky top-0 h-screen overflow-hidden">
           {/* Patient info above table */}
           <div className="mb-2">
             <div className="header text-left">
-              <h1 className="text-3xl font-bold">Hello, {patientData.name}</h1>
-              <p className="text-sm text-gray-500">
+              <p className="text-3xl font-bold text-black">Hello, {patientData.name}</p>
+              <p className="text-sm text-gray-800">
                 Age: {patientData.age} | Sex: {patientData.sex}
               </p>
             </div>
@@ -127,8 +121,8 @@ function ResultsPage() {
 
           {/* Table with fixed height and scroll */}
           <div className="rounded-md border h-dvh">
-            <div className="overflow-y-scroll h-dvh">
-              <Table>
+            <div className="h-dvh">
+              <Table className="table">
                 <TableHeader className="sticky top-0 bg-gray-50 z-10">
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
@@ -162,7 +156,7 @@ function ResultsPage() {
         </div>
 
         {/* Results summary spanning 2 columns */}
-        <div className="col-span-2 row-span-1">
+        <div className="col-span-3 row-span-3">
           <p className="results-summary">
             Your blood test results show normal levels across key areas. No further action is needed.
           </p>
@@ -170,9 +164,9 @@ function ResultsPage() {
           <div style={{ width: '100%', margin: '0', overflow: 'hidden' }}>
             <Plots allFigures={plotData} />
           </div>}
-          <Link to="/">
+          {/* <Link to="/">
           <button className="button-secondary">Back to Home</button>
-          </Link>
+          </Link> */}
         </div>
       </div>
     </div>
